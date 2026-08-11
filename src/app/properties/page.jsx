@@ -1,78 +1,34 @@
-import Link from "next/link";
+import Container from "@/components/Container";
+import PropertyCard from "@/components/PropertyCard";
+import { properties } from "@/data/properties";
 
-export default function PropertyCard({ property }) {
+export default function PropertiesPage() {
   return (
-    <div
-      className="
-        bg-white
-        rounded-2xl
-        overflow-hidden
-        shadow-sm
-        hover:shadow-xl
-        transition-all
-        duration-300
-      "
-    >
-      <div className="relative">
-        <img
-          src={property.image}
-          alt={property.title}
-          className="h-64 w-full object-cover"
-        />
-
-        {property.featured && (
-          <span
-            className="
-              absolute
-              top-4
-              left-4
-              bg-[#C89B3C]
-              text-black
-              px-3
-              py-1
-              rounded-full
-              text-sm
-              font-semibold
-            "
-          >
-            Featured
+    <main className="pt-32 pb-24">
+      <Container>
+        <div className="mb-12">
+          <span className="text-[#C89B3C] font-semibold">
+            Properties
           </span>
-        )}
-      </div>
 
-      <div className="p-6">
-        <h3 className="text-xl font-semibold">
-          {property.title}
-        </h3>
+          <h1 className="text-5xl font-bold mt-3">
+            Browse Properties
+          </h1>
 
-        <p className="text-gray-500 mt-2">
-          {property.city}
-        </p>
-
-        <div className="flex gap-4 mt-4 text-sm text-gray-600">
-          <span>{property.bedrooms} Beds</span>
-          <span>{property.bathrooms} Baths</span>
-        </div>
-
-        <div className="mt-5 flex items-center justify-between">
-          <p className="font-bold text-[#0F4C5C]">
-            PKR {property.price.toLocaleString()}
+          <p className="text-gray-600 mt-4">
+            Discover luxury homes and investment opportunities.
           </p>
-
-          <Link
-            href={`/properties/${property.id}`}
-            className="
-              bg-[#0F4C5C]
-              text-white
-              px-4
-              py-2
-              rounded-lg
-            "
-          >
-            View
-          </Link>
         </div>
-      </div>
-    </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {properties.map((property) => (
+            <PropertyCard
+              key={property.id}
+              property={property}
+            />
+          ))}
+        </div>
+      </Container>
+    </main>
   );
 }
