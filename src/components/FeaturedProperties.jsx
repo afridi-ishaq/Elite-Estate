@@ -1,32 +1,13 @@
 "use client";
 
 import Container from "./Container";
-
-const properties = [
-  {
-    id: 1,
-    title: "Luxury Villa Islamabad",
-    price: "PKR 4.5 Crore",
-    image:
-      "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
-  },
-  {
-    id: 2,
-    title: "Modern Apartment Lahore",
-    price: "PKR 2.2 Crore",
-    image:
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
-  },
-  {
-    id: 3,
-    title: "Commercial Plaza Karachi",
-    price: "PKR 12 Crore",
-    image:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
-  },
-];
+import { properties } from "@/data/properties";
 
 export default function FeaturedProperties() {
+  const featuredProperties = properties.filter(
+    (property) => property.featured
+  );
+
   return (
     <section className="py-24 bg-white">
       <Container>
@@ -41,7 +22,7 @@ export default function FeaturedProperties() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {properties.map((property) => (
+          {featuredProperties.map((property) => (
             <div
               key={property.id}
               className="
@@ -64,8 +45,12 @@ export default function FeaturedProperties() {
                   {property.title}
                 </h3>
 
+                <p className="text-gray-500 mt-2">
+                  {property.city}
+                </p>
+
                 <p className="text-[#0F4C5C] font-bold mt-2">
-                  {property.price}
+                  PKR {property.price.toLocaleString()}
                 </p>
 
                 <button
