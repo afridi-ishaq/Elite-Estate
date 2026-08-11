@@ -24,7 +24,7 @@ export default async function PropertyDetailsPage({
               alt={property.title}
               className="
                 w-full
-                h-[500px]
+                h-125
                 object-cover
                 rounded-3xl
               "
