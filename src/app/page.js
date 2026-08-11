@@ -11,7 +11,7 @@ import AIAssistant from "@/components/AIAssistant";
 export default function HomePage() {
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
 
       <main>
         <Hero />
@@ -22,7 +22,7 @@ export default function HomePage() {
         <WhyChooseUs />
         <Testimonials />
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }
