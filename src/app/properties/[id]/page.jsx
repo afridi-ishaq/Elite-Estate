@@ -22,7 +22,7 @@ export default async function PropertyDetailsPage({
             <img
               src={property.image}
               alt={property.title}
-              className="w-full h-[500px] object-cover rounded-3xl"
+              className="w-full h-125 object-cover rounded-3xl"
             />
           </div>
 
