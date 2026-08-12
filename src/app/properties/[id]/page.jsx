@@ -1,14 +1,14 @@
 import { notFound } from "next/navigation";
 import Container from "@/components/Container";
-import { properties } from "@/data/properties";
 import InquiryForm from "@/components/InquiryForm";
+import { getPropertyById } from "@/lib/property-service";
 
-export default async function PropertyDetailsPage({ params }) {
+export default async function PropertyDetailsPage({
+  params,
+}) {
   const { id } = await params;
 
-  const property = properties.find(
-    (item) => item.id === Number(id)
-  );
+  const property = await getPropertyById(id);
 
   if (!property) {
     notFound();
@@ -18,29 +18,20 @@ export default async function PropertyDetailsPage({ params }) {
     <main className="pt-32 pb-24">
       <Container>
         <div className="grid lg:grid-cols-2 gap-12">
-          {/* Image */}
           <div>
             <img
               src={property.image}
               alt={property.title}
-              className="w-full h-125 object-cover rounded-3xl"
+              className="w-full h-[500px] object-cover rounded-3xl"
             />
           </div>
 
-          {/* Details */}
           <div>
-            <span
-              className="
-                bg-[#C89B3C]
-                text-black
-                px-4
-                py-2
-                rounded-full
-                font-medium
-              "
-            >
-              Featured Property
-            </span>
+            {property.featured && (
+              <span className="bg-[#C89B3C] text-black px-4 py-2 rounded-full font-medium">
+                Featured Property
+              </span>
+            )}
 
             <h1 className="text-5xl font-bold mt-6">
               {property.title}
@@ -50,29 +41,18 @@ export default async function PropertyDetailsPage({ params }) {
               {property.city}
             </p>
 
-            <h2
-              className="
-                text-3xl
-                font-bold
-                mt-6
-                text-[#0F4C5C]
-              "
-            >
+            <h2 className="text-3xl font-bold mt-6 text-[#0F4C5C]">
               PKR {property.price.toLocaleString()}
             </h2>
 
             <div className="flex gap-8 mt-8">
               <div>
-                <h4 className="font-semibold">
-                  Bedrooms
-                </h4>
+                <h4 className="font-semibold">Bedrooms</h4>
                 <p>{property.bedrooms}</p>
               </div>
 
               <div>
-                <h4 className="font-semibold">
-                  Bathrooms
-                </h4>
+                <h4 className="font-semibold">Bathrooms</h4>
                 <p>{property.bathrooms}</p>
               </div>
             </div>
@@ -83,10 +63,7 @@ export default async function PropertyDetailsPage({ params }) {
               </h3>
 
               <p className="mt-4 text-gray-600 leading-8">
-                This premium property is located in a
-                prime location and offers luxury living
-                with modern amenities, spacious rooms,
-                and excellent investment potential.
+                {property.description}
               </p>
             </div>
 
