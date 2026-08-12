@@ -1,8 +1,10 @@
 import Container from "@/components/Container";
 import PropertyCard from "@/components/PropertyCard";
-import { properties } from "@/data/properties";
+import { getProperties } from "@/lib/property-service";
 
-export default function PropertiesPage() {
+export default async function PropertiesPage() {
+  const properties = await getProperties();
+
   return (
     <main className="pt-32 pb-24">
       <Container>
@@ -20,14 +22,26 @@ export default function PropertiesPage() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {properties.map((property) => (
-            <PropertyCard
-              key={property.id}
-              property={property}
-            />
-          ))}
-        </div>
+        {properties.length === 0 ? (
+          <div className="bg-white rounded-2xl p-10 text-center">
+            <h2 className="text-2xl font-semibold">
+              No Properties Found
+            </h2>
+
+            <p className="text-gray-500 mt-3">
+              Add some properties to the database first.
+            </p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {properties.map((property) => (
+              <PropertyCard
+                key={property.id}
+                property={property}
+              />
+            ))}
+          </div>
+        )}
       </Container>
     </main>
   );
