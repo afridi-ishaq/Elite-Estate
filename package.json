@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
+    "bcrypt": "^6.0.0",
     "icons": "^1.0.0",
     "lucide-react": "^1.31.0",
     "motion": "^13.1.0",
     "next": "16.3.0",
+    "next-auth": "^4.24.15",
     "prisma": "^6.19.3",
     "react": "^19.2.8",
     "react-dom": "19.2.8",
@@ -22,6 +24,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^6.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
     "tailwindcss": "^4"
