@@ -1,7 +1,9 @@
-import { prisma } from "./prisma";
+import { prisma } from "@/lib/prisma";
 
-export async function createLead(data) {
-  return await prisma.lead.create({
-    data,
+export async function getLeads() {
+  return await prisma.lead.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 }
