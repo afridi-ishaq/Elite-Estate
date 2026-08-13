@@ -52,7 +52,7 @@ model Property {
 }
 
 model Lead {
-  id           String      @id @default(cuid())
+  id           String   @id @default(cuid())
 
   name         String
   email        String
@@ -62,8 +62,10 @@ model Lead {
   budget       Float?
   propertyType String?
 
-  status       LeadStatus  @default(NEW)
+  message      String?
 
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  status       LeadStatus @default(NEW)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
