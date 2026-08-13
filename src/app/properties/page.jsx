@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Container from "@/components/Container";
 import PropertyCard from "@/components/PropertyCard";
 import { getProperties } from "@/lib/property-service";
