@@ -68,6 +68,7 @@ export default function PropertyCard({ property }) {
               py-2
               rounded-lg
             "
+            style={{ color: "white" }}
           >
             View
           </Link>
