@@ -1,75 +1,126 @@
 "use client";
 
+import { useState } from "react";
+
 export default function InquiryForm() {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      setSuccess("");
+
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSuccess("Inquiry submitted successfully!");
+
+        setForm({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div
-      className="
-        bg-white
-        p-8
-        rounded-3xl
-        shadow-sm
-      "
-    >
-      <h3 className="text-2xl font-bold">
+    <div className="bg-white p-8 rounded-3xl shadow-md">
+      <h3 className="text-2xl font-bold mb-6">
         Request Information
       </h3>
 
-      <form className="mt-6 space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
+          name="name"
           placeholder="Full Name"
-          className="
-            w-full
-            border
-            rounded-xl
-            p-4
-          "
+          value={form.name}
+          onChange={handleChange}
+          required
+          className="w-full border border-gray-300 rounded-xl p-3"
         />
 
         <input
           type="email"
-          placeholder="Email"
-          className="
-            w-full
-            border
-            rounded-xl
-            p-4
-          "
+          name="email"
+          placeholder="Email Address"
+          value={form.email}
+          onChange={handleChange}
+          required
+          className="w-full border border-gray-300 rounded-xl p-3"
         />
 
         <input
-          type="tel"
+          type="text"
+          name="phone"
           placeholder="Phone Number"
-          className="
-            w-full
-            border
-            rounded-xl
-            p-4
-          "
+          value={form.phone}
+          onChange={handleChange}
+          required
+          className="w-full border border-gray-300 rounded-xl p-3"
         />
 
         <textarea
-          rows="4"
+          name="message"
           placeholder="Message"
-          className="
-            w-full
-            border
-            rounded-xl
-            p-4
-          "
+          rows="5"
+          value={form.message}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-xl p-3"
         />
 
         <button
+          type="submit"
+          disabled={loading}
           className="
             w-full
             bg-[#0F4C5C]
             text-white
-            py-4
+            py-3
             rounded-xl
+            font-semibold
           "
         >
-          Submit Inquiry
+          {loading ? "Submitting..." : "Submit Inquiry"}
         </button>
+
+        {success && (
+          <p className="text-green-600 text-center">
+            {success}
+          </p>
+        )}
       </form>
     </div>
   );
