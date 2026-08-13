@@ -1,17 +1,26 @@
-import { prisma } from "./prisma";
+import { prisma } from "@/lib/prisma";
 
 export async function getDashboardStats() {
-  const properties = await prisma.property.count();
-  const leads = await prisma.lead.count();
-  const agents = await prisma.user.count({
+  const totalProperties = await prisma.property.count();
+
+  const totalLeads = await prisma.lead.count();
+
+  const totalAgents = await prisma.user.count({
     where: {
       role: "AGENT",
     },
   });
 
+  const newLeads = await prisma.lead.count({
+    where: {
+      status: "NEW",
+    },
+  });
+
   return {
-    properties,
-    leads,
-    agents,
+    totalProperties,
+    totalLeads,
+    totalAgents,
+    newLeads,
   };
 }
