@@ -61,6 +61,9 @@ export default async function AdminPage() {
             </p>
           </div>
         </div>
+        <div className="mb-12">
+          <LeadsChart />
+        </div>
 
         {/* Navigation Cards */}
 
