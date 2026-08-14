@@ -24,3 +24,24 @@ export async function getDashboardStats() {
     newLeads,
   };
 }
+
+export async function getLeadStatusData() {
+  const leads =
+    await prisma.lead.findMany();
+
+  const statuses = [
+    "NEW",
+    "CONTACTED",
+    "INTERESTED",
+    "VISIT_SCHEDULED",
+    "CLOSED",
+  ];
+
+  return statuses.map((status) => ({
+    name: status,
+    value: leads.filter(
+      (lead) =>
+        lead.status === status
+    ).length,
+  }));
+}

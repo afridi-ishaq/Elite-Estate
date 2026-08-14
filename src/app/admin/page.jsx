@@ -1,10 +1,21 @@
 import Link from "next/link";
 import Container from "@/components/Container";
-import { getDashboardStats } from "@/lib/dashboard-service";
+
 import LeadsChart from "@/components/admin/LeadsChart";
 
+import LeadStatusChart from "@/components/admin/LeadStatusChart";
+
+import {
+  getDashboardStats,
+  getLeadStatusData,
+} from "@/lib/dashboard-service";
+
 export default async function AdminPage() {
-  const stats = await getDashboardStats();
+  const stats =
+    await getDashboardStats();
+
+  const chartData =
+    await getLeadStatusData();
 
   return (
     <main className="pt-32 pb-24">
@@ -62,9 +73,16 @@ export default async function AdminPage() {
             </p>
           </div>
         </div>
-        <div className="mb-12">
-          <LeadsChart />
+        {/* Charts */}
+        <div className="grid grid-cols-1 md:grid-cols-10 gap-6 items-start mb-10">
+          <div className="md:col-span-7">
+            <LeadsChart />
+          </div>
+          <div className="md:col-span-3">
+            <LeadStatusChart data={chartData} />
+          </div>
         </div>
+        
 
         {/* Navigation Cards */}
 
