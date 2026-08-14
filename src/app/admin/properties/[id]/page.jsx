@@ -1,11 +1,22 @@
 import { getPropertyById } from "@/lib/property-service";
-
+import { updateProperty } from "@/actions/property-actions";
+import { redirect } from "next/navigation";
 export default async function EditPropertyPage({
   params,
 }) {
   const { id } = await params;
 
   const property = await getPropertyById(id);
+
+  async function update(formData) {
+    "use server";
+
+    await updateProperty(id, formData);
+
+
+    // redirect("/admin/properties");
+    redirect("/admin/properties");
+  }
 
   return (
     <main className="pt-32 pb-24">
@@ -14,45 +25,49 @@ export default async function EditPropertyPage({
           Edit Property
         </h1>
 
-        <form className="space-y-4">
+        <form action={update} className="space-y-4">
           <input
-            type="text"
+            name="title"
             defaultValue={property.title}
             className="w-full border p-3 rounded-xl"
           />
 
           <textarea
+            name="description"
             defaultValue={property.description}
-            className="w-full border p-3 rounded-xl"
             rows="4"
+            className="w-full border p-3 rounded-xl"
           />
 
           <input
-            type="text"
+            name="city"
             defaultValue={property.city}
             className="w-full border p-3 rounded-xl"
           />
 
           <input
+            name="price"
             type="number"
             defaultValue={property.price}
             className="w-full border p-3 rounded-xl"
           />
 
           <input
+            name="bedrooms"
             type="number"
             defaultValue={property.bedrooms}
             className="w-full border p-3 rounded-xl"
           />
 
           <input
+            name="bathrooms"
             type="number"
             defaultValue={property.bathrooms}
             className="w-full border p-3 rounded-xl"
           />
 
           <input
-            type="text"
+            name="image"
             defaultValue={property.image}
             className="w-full border p-3 rounded-xl"
           />
