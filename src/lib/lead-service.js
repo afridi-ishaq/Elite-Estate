@@ -7,6 +7,7 @@ export async function getLeads() {
     },
   });
 }
+
 export async function getLeadById(id) {
   return await prisma.lead.findUnique({
     where: {
