@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Container from "@/components/Container";
 import { getAdminProperties } from "@/lib/admin-property-service";
+import DeletePropertyButton from "@/components/DeletePropertyButton";
+import { deleteProperty } from "@/actions/delete-property";
 
 export default async function AdminPropertiesPage() {
   const properties = await getAdminProperties();
@@ -48,6 +50,12 @@ export default async function AdminPropertiesPage() {
                 >
                   Edit
                 </Link>
+                <DeletePropertyButton
+                  action={async () => {
+                    "use server";
+                    await deleteProperty(property.id);
+                  }}
+                />
               </div>
             </div>
           ))}
