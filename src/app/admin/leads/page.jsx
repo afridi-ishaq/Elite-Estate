@@ -1,28 +1,36 @@
 import Container from "@/components/Container";
-import { prisma } from "@/lib/prisma";
+import { getLeads } from "@/lib/lead-service";
+import LeadStatusSelect from "@/components/LeadStatusSelect";
 
 export default async function AdminLeadsPage() {
-  const leads = await prisma.lead.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const leads = await getLeads();
 
   return (
     <main className="pt-32 pb-24">
       <Container>
         <h1 className="text-4xl font-bold mb-8">
-          Lead Management
+          Leads Management
         </h1>
 
-        <div className="bg-white rounded-3xl p-6 shadow-md overflow-x-auto">
+        <div className="bg-white rounded-3xl shadow-md overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="border-b">
-                <th className="text-left p-4">Name</th>
-                <th className="text-left p-4">Email</th>
-                <th className="text-left p-4">Phone</th>
-                <th className="text-left p-4">Status</th>
+                <th className="p-4 text-left">
+                  Name
+                </th>
+
+                <th className="p-4 text-left">
+                  Email
+                </th>
+
+                <th className="p-4 text-left">
+                  Phone
+                </th>
+
+                <th className="p-4 text-left">
+                  Status
+                </th>
               </tr>
             </thead>
 
@@ -45,7 +53,10 @@ export default async function AdminLeadsPage() {
                   </td>
 
                   <td className="p-4">
-                    {lead.status}
+                    <LeadStatusSelect
+                      id={lead.id}
+                      currentStatus={lead.status}
+                    />
                   </td>
                 </tr>
               ))}
