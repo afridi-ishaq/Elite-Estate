@@ -1,6 +1,7 @@
 import Container from "@/components/Container";
 import { getLeads } from "@/lib/lead-service";
 import LeadStatusSelect from "@/components/LeadStatusSelect";
+import Link from "next/link";
 
 export default async function AdminLeadsPage() {
   const leads = await getLeads();
@@ -15,33 +16,64 @@ export default async function AdminLeadsPage() {
         <div className="bg-white rounded-3xl shadow-md overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th>Actions</th>
+              <tr className="border-b">
+                <th className="p-4 text-left">
+                  Name
+                </th>
+
+                <th className="p-4 text-left">
+                  Email
+                </th>
+
+                <th className="p-4 text-left">
+                  Phone
+                </th>
+
+                <th className="p-4 text-left">
+                  Status
+                </th>
+
+                <th className="p-4 text-left">
+                  Actions
+                </th>
               </tr>
             </thead>
 
             <tbody>
               {leads.map((lead) => (
-                <tr key={lead.id}>
-                  <td>{lead.name}</td>
-                  <td>{lead.email}</td>
-                  <td>{lead.phone}</td>
-                  <td>{lead.status}</td>
+                <tr
+                  key={lead.id}
+                  className="border-b hover:bg-gray-50"
+                >
+                  <td className="p-4">
+                    {lead.name}
+                  </td>
 
-                  <td>
+                  <td className="p-4">
+                    {lead.email}
+                  </td>
+
+                  <td className="p-4">
+                    {lead.phone}
+                  </td>
+
+                  <td className="p-4">
+                    {lead.status}
+                  </td>
+
+                  <td className="p-4">
                     <Link
                       href={`/admin/leads/${lead.id}`}
                       className="
-        bg-[#0F4C5C]
-        text-white
-        px-3
-        py-2
-        rounded-lg
-      "
+                      inline-block
+                      bg-[#0F4C5C]
+                      text-white
+                      px-4
+                      py-2
+                      rounded-lg
+                      hover:opacity-90
+                      transition
+                    "
                       style={{ color: "white" }}
                     >
                       View
