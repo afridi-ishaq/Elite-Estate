@@ -1,41 +1,45 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LeadStatusSelect({
-  id,
+  leadId,
   currentStatus,
 }) {
-  const router = useRouter();
+  const [status, setStatus] =
+    useState(currentStatus);
 
-  async function handleChange(e) {
-    const status = e.target.value;
+  async function updateStatus(newStatus) {
+    setStatus(newStatus);
 
-    await fetch(`/api/leads/${id}`, {
+    await fetch(`/api/leads/${leadId}`, {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type":
+          "application/json",
       },
       body: JSON.stringify({
-        status,
+        status: newStatus,
       }),
     });
-
-    router.refresh();
   }
 
   return (
     <select
-      defaultValue={currentStatus}
-      onChange={handleChange}
+      value={status}
+      onChange={(e) =>
+        updateStatus(e.target.value)
+      }
       className="
         border
-        rounded-lg
-        px-3
+        rounded-xl
+        px-4
         py-2
       "
     >
-      <option value="NEW">NEW</option>
+      <option value="NEW">
+        NEW
+      </option>
 
       <option value="CONTACTED">
         CONTACTED
