@@ -45,3 +45,21 @@ export async function getLeadStatusData() {
     ).length,
   }));
 }
+
+export async function getRecentLeads() {
+  return await prisma.lead.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 5,
+  });
+}
+
+export async function getRecentProperties() {
+  return await prisma.property.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 5,
+  });
+}

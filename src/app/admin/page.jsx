@@ -5,17 +5,24 @@ import LeadsChart from "@/components/admin/LeadsChart";
 
 import LeadStatusChart from "@/components/admin/LeadStatusChart";
 
+
 import {
   getDashboardStats,
   getLeadStatusData,
+  getRecentLeads,
+  getRecentProperties,
 } from "@/lib/dashboard-service";
 
 export default async function AdminPage() {
-  const stats =
-    await getDashboardStats();
+  const stats = await getDashboardStats();
 
-  const chartData =
-    await getLeadStatusData();
+  const chartData = await getLeadStatusData();
+
+  const recentLeads =
+    await getRecentLeads();
+
+  const recentProperties =
+    await getRecentProperties();
 
   return (
     <main className="pt-32 pb-24">
@@ -82,7 +89,69 @@ export default async function AdminPage() {
             <LeadStatusChart data={chartData} />
           </div>
         </div>
-        
+
+        <div className="mt-12 bg-white rounded-3xl p-6 shadow-md">
+          <h2 className="text-2xl font-bold mb-6">
+            Recent Leads
+          </h2>
+
+          <div className="space-y-4">
+            {recentLeads.map((lead) => (
+              <div
+                key={lead.id}
+                className="flex justify-between border-b pb-3"
+              >
+                <div>
+                  <p className="font-semibold">
+                    {lead.name}
+                  </p>
+
+                  <p className="text-gray-500 text-sm">
+                    {lead.email}
+                  </p>
+                </div>
+
+                <span className="text-sm">
+                  {lead.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+
+        <div className="mt-8 bg-white rounded-3xl p-6 shadow-md mb-12">
+          <h2 className="text-2xl font-bold mb-6">
+            Recent Properties
+          </h2>
+
+          <div className="space-y-4">
+            {recentProperties.map(
+              (property) => (
+                <div
+                  key={property.id}
+                  className="flex justify-between border-b pb-3"
+                >
+                  <div>
+                    <p className="font-semibold">
+                      {property.title}
+                    </p>
+
+                    <p className="text-gray-500 text-sm">
+                      {property.city}
+                    </p>
+                  </div>
+
+                  <span>
+                    PKR{" "}
+                    {property.price.toLocaleString()}
+                  </span>
+                </div>
+              )
+            )}
+          </div>
+        </div>
+
 
         {/* Navigation Cards */}
 
