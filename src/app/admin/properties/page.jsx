@@ -16,6 +16,7 @@ export default async function AdminPropertiesPage() {
           <Link
             href="/admin/properties/new"
             className="bg-[#0F4C5C] text-white px-5 py-3 rounded-xl"
+            style={{ color: "white" }}
           >
             Add Property
           </Link>
@@ -25,7 +26,7 @@ export default async function AdminPropertiesPage() {
           {properties.map((property) => (
             <div
               key={property.id}
-              className="border-b py-4 flex justify-between"
+              className="border-b py-4 flex justify-between items-center"
             >
               <div>
                 <h3 className="font-bold">
@@ -35,8 +36,18 @@ export default async function AdminPropertiesPage() {
                 <p>{property.city}</p>
               </div>
 
-              <div>
-                PKR {property.price.toLocaleString()}
+              <div className="flex items-center gap-4">
+                <div>
+                  PKR {property.price.toLocaleString()}
+                </div>
+
+                <Link
+                  href={`/admin/properties/${property.id}`}
+                  className="bg-[#0F4C5C] text-white px-4 py-2 rounded-lg"
+                  style={{ color: "white" }}
+                >
+                  Edit
+                </Link>
               </div>
             </div>
           ))}
