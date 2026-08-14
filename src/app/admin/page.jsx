@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Container from "@/components/Container";
 import { getDashboardStats } from "@/lib/dashboard-service";
+import LeadsChart from "@/components/admin/LeadsChart";
 
 export default async function AdminPage() {
   const stats = await getDashboardStats();
