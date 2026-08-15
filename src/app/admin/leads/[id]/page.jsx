@@ -2,7 +2,7 @@ import Container from "@/components/Container";
 import { getLeadById } from "@/lib/lead-service";
 import { notFound } from "next/navigation";
 import LeadStatusSelect from "@/components/LeadStatusSelect";
-import Link from "next/link";
+
 
 
 export default async function LeadDetailsPage({
@@ -64,13 +64,13 @@ export default async function LeadDetailsPage({
               {lead.message || "No message"}
             </div>
           </div>
-            <Link 
+          <a 
             href="/admin/leads" 
-            style={{ color: "white" }}
+            style={{ color:"white"}}
             className="inline-block mt-6 bg-[#0F4C5C] text-white px-5 py-3 rounded-xl hover:bg-[#0b3844] transition-colors"
-            >
+          >
             OK
-            </Link>
+          </a>
         </div>
       </Container>
     </main>
