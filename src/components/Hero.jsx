@@ -25,21 +25,31 @@ export default function Hero() {
           transition={{ duration: 0.8 }}
           className="max-w-3xl"
         >
-          <span
-            className="
-              inline-flex
-              px-4
-              py-2
-              rounded-full
-              bg-[#C89B3C]/20
-              text-[#D9C7A7]
-              border
-              border-[#C89B3C]/30
-              mb-6
-            "
-          >
+
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#05e335]/10 text-[#D9C7A7] border border-[#C89B3C]/30 text-sm font-medium tracking-wide shadow-sm mb-6">
+            {/* Indicator Wrapper */}
+            <div className="relative flex items-center justify-center w-2 h-2">
+              {/* Pulsing Ripple Effect */}
+              <motion.div
+                className="absolute w-full h-full rounded-full bg-emerald-400"
+                animate={{
+                  scale: [1, 2.5],
+                  opacity: [0.6, 0],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeOut", // Smoother for pulse rings
+                }}
+              />
+              {/* Solid Center Dot */}
+              <div className="relative w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+            </div>
+
+            {/* Text */}
             Pakistan's Premium Real Estate Platform
           </span>
+
 
           <h1
             className="
@@ -77,32 +87,32 @@ export default function Hero() {
                 font-semibold text-[#0F4C5C] transition-colors duration-400 ease-out
                 hover:text-white
                 ">
-                {/* Background slide animation layer (Slides Right-to-Left) */}
-                <span className="
+              {/* Background slide animation layer (Slides Right-to-Left) */}
+              <span className="
                     absolute inset-0 -z-10 translate-x-full bg-[#0F4C5C] 
                     transition-transform duration-400 ease-out 
                     group-hover:translate-x-0
                 " />
 
-                {/* Button Text */}
-                <span className="whitespace-nowrap pr-6 text-white select-none">
-                    Browse Properties
-                </span>
+              {/* Button Text */}
+              <span className="whitespace-nowrap pr-6 text-white select-none">
+                Browse Properties
+              </span>
 
-                {/* Circular Icon Wrapper */}
-                <span className="
+              {/* Circular Icon Wrapper */}
+              <span className="
                     flex items-center justify-center 
                     w-9 h-9 rounded-full 
                     bg-[#0F4C5C] text-white 
                     transition-all duration-400 ease-out
                     group-hover:bg-white group-hover:text-[#0F4C5C]
                 ">
-                    <HousePlus 
-                    size={18} 
-                    className="transform transition-transform duration-300 group-hover:scale-110" 
-                    />
-                </span>
-                </button>
+                <HousePlus
+                  size={18}
+                  className="transform transition-transform duration-300 group-hover:scale-110"
+                />
+              </span>
+            </button>
 
             <button
               className="
