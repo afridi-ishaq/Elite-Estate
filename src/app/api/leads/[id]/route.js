@@ -1,34 +1,23 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function PATCH(request, { params }) {
-  try {
-    const { id } = await params;
+  const { id } = await params;
 
-    const body = await request.json();
+  const body = await request.json();
 
-    const lead = await prisma.lead.update({
-      where: {
-        id,
-      },
-      data: {
-        status: body.status,
-      },
-    });
+  const lead = await prisma.lead.update({
+    where: {
+      id,
+    },
+    data: {
+      status: body.status,
+    },
+  });
 
-    return NextResponse.json({
-      success: true,
-      lead,
-    });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message,
-      },
-      {
-        status: 500,
-      }
-    );
-  }
+  revalidatePath("/admin/leads");
+  revalidatePath("/admin");
+
+  return NextResponse.json(lead);
 }
