@@ -33,13 +33,13 @@ export default function Hero() {
               <motion.div
                 className="absolute w-full h-full rounded-full bg-emerald-400"
                 animate={{
-                  scale: [1, 2.5],
+                  scale: [1, 3],
                   opacity: [0.6, 0],
                 }}
                 transition={{
                   duration: 2,
                   repeat: Infinity,
-                  ease: "easeOut", // Smoother for pulse rings
+                  ease: "easeInOut", // Smoother for pulse rings
                 }}
               />
               {/* Solid Center Dot */}

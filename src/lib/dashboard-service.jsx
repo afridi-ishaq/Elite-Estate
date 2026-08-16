@@ -63,3 +63,22 @@ export async function getRecentProperties() {
     take: 5,
   });
 }
+
+export async function getPropertiesByCity() {
+  const properties =
+    await prisma.property.findMany();
+
+  const grouped = {};
+
+  properties.forEach((property) => {
+    grouped[property.city] =
+      (grouped[property.city] || 0) + 1;
+  });
+
+  return Object.entries(grouped).map(
+    ([city, count]) => ({
+      city,
+      count,
+    })
+  );
+}
