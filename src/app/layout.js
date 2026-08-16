@@ -1,8 +1,9 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Providers from "./providers";
-
+import AdminSidebar from "@/components/admin/AdminSidebar";
 import "./globals.css";
+
 
 export const metadata = {
   title: "Elite Estates",
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body className="bg-[#F8F7F4] text-[#1A1A1A]">
         <Providers>
           <Navbar />
+          
           {children}
           <Footer />
         </Providers>

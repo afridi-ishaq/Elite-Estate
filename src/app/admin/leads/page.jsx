@@ -10,13 +10,7 @@ export default async function AdminLeadsPage() {
   return ( 
     <main className="pt-32 pb-24"> 
       <Container> 
-        {/* Changed from button to Link */}
-        <Link 
-          href="/admin" 
-          className="inline-block mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
-        > 
-          Dashboard 
-        </Link> 
+        {/* Changed from button to Link */} 
         
         <h1 className="text-4xl font-bold mb-8"> Leads Management </h1> 
         <div className="bg-white rounded-3xl shadow-md overflow-hidden"> 
