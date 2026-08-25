@@ -10,7 +10,7 @@ export default function Hero() {
       {/* Background */}
       <div className="absolute inset-0">
         <img
-          src="/images/Eliteestate1.jpg"
+          src="/favicon.ico"
           alt="Luxury Property"
           className="w-full h-full object-cover"
         />
