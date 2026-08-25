@@ -37,18 +37,18 @@ export default function InquiryForm() {
 
       const data = await response.json();
 
-if (!response.ok) {
-  throw new Error(data.error);
-}
+      if (!response.ok) {
+        throw new Error(data.error);
+      }
 
-setSuccess("Inquiry submitted successfully!");
+      setSuccess("Inquiry submitted successfully!");
 
-setForm({
-  name: "",
-  email: "",
-  phone: "",
-  message: "",
-});
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+      });
     } catch (error) {
       console.error(error);
       alert("Something went wrong.");

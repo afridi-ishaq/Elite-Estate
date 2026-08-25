@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import {
   HiOutlineHome,
@@ -7,55 +8,83 @@ import {
   HiOutlineUserGroup,
   HiOutlineUsers,
 } from "react-icons/hi";
+import { ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 
 export default function AdminSidebar() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   return (
-    <aside
-      className="
-        w-64
-        min-h-screen
-        bg-[#0F4C5C]
-        text-white
-        p-6
-      "
-    >
-      <h2 className="text-2xl font-bold mb-10 mt-20">
-        Elite Estates
-      </h2>
+    <>
+      <ResizablePanel
+        defaultSize={100}
+        minSize={60}
+        maxSize={230}
+        collapsible={true}
+        collapsedSize={60}
+        onCollapse={() => setIsCollapsed(true)}
+        onExpand={() => setIsCollapsed(false)}
+        className="bg-[#0F4C5C] text-white p-4 min-h-screen transition-all duration-300"
+      >
+        <aside className="h-full flex flex-col justify-between">
+          <div>
+            <h2
+              className={`font-bold mb-8 mt-16 transition-all duration-200 ${
+                isCollapsed ? "text-center text-sm" : "text-xl px-2"
+              }`}
+            >
+              {isCollapsed ? "EE" : "Elite Estates"}
+            </h2>
 
-      <nav className="space-y-3">
-        <Link
-          href="/admin"
-          className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10"
-        >
-          <HiOutlineHome size={22} />
-          Dashboard
-        </Link>
+            <nav className="space-y-3">
+              <Link
+                href="/admin"
+                title="Dashboard"
+                className={`flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 ${
+                  isCollapsed ? "justify-center" : ""
+                }`}
+              >
+                <HiOutlineHome size={22} className="shrink-0" />
+                {!isCollapsed && <span className="truncate">Dashboard</span>}
+              </Link>
 
-        <Link
-          href="/admin/properties"
-          className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10"
-        >
-          <HiOutlineOfficeBuilding size={22} />
-          Properties
-        </Link>
+              <Link
+                href="/admin/properties"
+                title="Properties"
+                className={`flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 ${
+                  isCollapsed ? "justify-center" : ""
+                }`}
+              >
+                <HiOutlineOfficeBuilding size={22} className="shrink-0" />
+                {!isCollapsed && <span className="truncate">Properties</span>}
+              </Link>
 
-        <Link
-          href="/admin/leads"
-          className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10"
-        >
-          <HiOutlineUserGroup size={22} />
-          Leads
-        </Link>
+              <Link
+                href="/admin/leads"
+                title="Leads"
+                className={`flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 ${
+                  isCollapsed ? "justify-center" : ""
+                }`}
+              >
+                <HiOutlineUserGroup size={22} className="shrink-0" />
+                {!isCollapsed && <span className="truncate">Leads</span>}
+              </Link>
 
-        <Link
-          href="/admin/agents"
-          className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10"
-        >
-          <HiOutlineUsers size={22} />
-          Agents
-        </Link>
-      </nav>
-    </aside>
+              <Link
+                href="/admin/agents"
+                title="Agents"
+                className={`flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 ${
+                  isCollapsed ? "justify-center" : ""
+                }`}
+              >
+                <HiOutlineUsers size={22} className="shrink-0" />
+                {!isCollapsed && <span className="truncate">Agents</span>}
+              </Link>
+            </nav>
+          </div>
+        </aside>
+      </ResizablePanel>
+
+      <ResizableHandle withHandle />
+    </>
   );
 }
