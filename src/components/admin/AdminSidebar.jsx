@@ -17,10 +17,10 @@ export default function AdminSidebar() {
     <>
       <ResizablePanel
         defaultSize={100}
-        minSize={60}
-        maxSize={230}
+        minSize={80}
+        maxSize={220}
         collapsible={true}
-        collapsedSize={60}
+        collapsedSize={80}
         onCollapse={() => setIsCollapsed(true)}
         onExpand={() => setIsCollapsed(false)}
         className="bg-[#0F4C5C] text-white p-4 min-h-screen transition-all duration-300"
@@ -28,7 +28,7 @@ export default function AdminSidebar() {
         <aside className="h-full flex flex-col justify-between">
           <div>
             <h2
-              className={`font-bold mb-8 mt-16 transition-all duration-200 ${
+              className={`font-bold -ml-1.5 mb-8 mt-16 transition-all duration-200 ${
                 isCollapsed ? "text-center text-sm" : "text-xl px-2"
               }`}
             >

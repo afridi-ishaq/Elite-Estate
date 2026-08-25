@@ -14,6 +14,7 @@ const ResizablePanelGroup = ({
   />
 );
 
+// Directly export Panel primitive so onCollapse/onExpand work seamlessly
 const ResizablePanel = ResizablePrimitive.Panel;
 
 const ResizableHandle = ({
