@@ -1,44 +1,49 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function PUT(request, { params }) {
-  const { id } = await params;
+    const { id } = await params;
 
-  const body = await request.json();
+    const body = await request.json();
 
-  const agent = await prisma.agent.update({
-    where: {
-      id,
-    },
-    data: {
-      name: body.name,
-      email: body.email,
-      phone: body.phone,
-      title: body.title,
-      bio: body.bio,
-    },
-  });
+    const agent = await prisma.agent.update({
+        where: {
+            id,
+        },
+        data: {
+            name: body.name,
+            email: body.email,
+            phone: body.phone,
+            title: body.title,
+            bio: body.bio,
+        },
+    });
+    revalidatePath("/admin/agents");
+    revalidatePath("/admin");
+    revalidatePath(`/admin/agents/${id}`);
 
-  return NextResponse.json({
-    success: true,
-    agent,
-  });
+    return NextResponse.json({
+        success: true,
+        agent,
+    });
 }
 
 
 export async function DELETE(
-  request,
-  { params }
+    request,
+    { params }
 ) {
-  const { id } = await params;
+    const { id } = await params;
 
-  await prisma.agent.delete({
-    where: {
-      id,
-    },
-  });
+    await prisma.agent.delete({
+        where: { id },
+    });
 
-  return NextResponse.json({
-    success: true,
-  });
+    revalidatePath("/admin/agents");
+    revalidatePath("/admin");
+
+    return NextResponse.json({
+        success: true,
+    });
 }
