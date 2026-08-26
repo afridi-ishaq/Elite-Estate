@@ -1,11 +1,22 @@
 export const dynamic = "force-dynamic";
-
+import { Suspense } from "react";
 import Container from "@/components/Container";
 import PropertyCard from "@/components/PropertyCard";
-import { getProperties } from "@/lib/property-service";
+import {
+  getFilteredProperties,
+} from "@/lib/property-service";
 
-export default async function PropertiesPage() {
-  const properties = await getProperties();
+export default async function PropertiesPage({
+  searchParams,
+}) {
+
+ const params = await searchParams;
+
+  const search =
+    params?.search || "";
+
+  const properties =
+    await getFilteredProperties(search);
 
   return (
     <main className="pt-32 pb-24">
@@ -22,6 +33,21 @@ export default async function PropertiesPage() {
           <p className="text-gray-600 mt-4">
             Discover luxury homes and investment opportunities.
           </p>
+          <form className="mb-8">
+          <input
+            type="text"
+            name="search"
+            defaultValue={search}
+            placeholder="Search city or property..."
+            className="
+              w-full
+              border
+              border-gray-300
+              rounded-xl
+              p-4
+            "
+          />
+        </form>
         </div>
 
         {properties.length === 0 ? (
@@ -35,6 +61,7 @@ export default async function PropertiesPage() {
             </p>
           </div>
         ) : (
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {properties.map((property) => (
               <PropertyCard
