@@ -15,8 +15,13 @@ export default async function PropertiesPage({
   const search =
     params?.search || "";
 
-  const properties =
-    await getFilteredProperties(search);
+ const properties =
+  await getFilteredProperties(
+    search,
+    city
+  );
+
+    const city = params?.city || "";
 
   return (
     <main className="pt-32 pb-24">
@@ -47,7 +52,6 @@ export default async function PropertiesPage({
               p-4
             "
           />
-        </form>
           <select
             name="city"
             defaultValue={city}
@@ -64,6 +68,8 @@ export default async function PropertiesPage({
             <option value="Karachi">Karachi</option>
             <option value="Peshawar">Peshawar</option>
           </select>
+        </form>
+          
         </div>
 
         {properties.length === 0 ? (
