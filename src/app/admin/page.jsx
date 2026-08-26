@@ -132,7 +132,7 @@ export default async function AdminPage() {
           </div>
 
           {/* Card 4: New Leads */}
-          <div className="group bg-gradient-to-br from-amber-50/60 to-white border border-amber-200/80 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
+          <div className="group bg-linear-to-br from-amber-50/60 to-white border border-amber-200/80 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold uppercase tracking-wider text-amber-900">
                 New Leads
@@ -161,7 +161,7 @@ export default async function AdminPage() {
                 <p className="text-xs text-slate-500">Inquiries timeline over time</p>
               </div>
             </div>
-            <div className="w-full h-full min-h-[300px]">
+            <div className="w-full h-full min-h-75">
               <LeadsChart />
             </div>
           </div>
@@ -236,7 +236,7 @@ export default async function AdminPage() {
               <h2 className="text-xl font-bold text-slate-900">Regional Distribution</h2>
               <p className="text-xs text-slate-500">Property portfolio broken down by city</p>
             </div>
-            <div className="w-full flex-1 flex items-center justify-center min-h-[280px]">
+            <div className="w-full flex-1 flex items-center justify-center min-h-70">
               <PropertiesCityChart data={cityData} />
             </div>
           </div>
