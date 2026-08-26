@@ -5,7 +5,7 @@ import PropertyCard from "@/components/PropertyCard";
 import { getProperties } from "@/lib/property-service";
 
 export default async function PropertiesPage() {
-  const  = await getProperties();
+  const properties = await getProperties();
 
   return (
     <main className="pt-32 pb-24">
