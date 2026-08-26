@@ -24,3 +24,21 @@ export async function PUT(request, { params }) {
     agent,
   });
 }
+
+
+export async function DELETE(
+  request,
+  { params }
+) {
+  const { id } = await params;
+
+  await prisma.agent.delete({
+    where: {
+      id,
+    },
+  });
+
+  return NextResponse.json({
+    success: true,
+  });
+}

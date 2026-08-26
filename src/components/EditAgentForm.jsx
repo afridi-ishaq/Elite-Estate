@@ -39,6 +39,28 @@ export default function EditAgentForm({
       router.refresh();
     }
   }
+  async function handleDelete() {
+  const confirmed = confirm(
+    "Delete this agent?"
+  );
+
+  if (!confirmed) return;
+
+  const response = await fetch(
+    `/api/agents/${agent.id}`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  const data =
+    await response.json();
+
+  if (data.success) {
+    router.push("/admin/agents");
+    router.refresh();
+  }
+}
 
   return (
     <form
@@ -113,6 +135,20 @@ export default function EditAgentForm({
       >
         Update Agent
       </button>
+      <button
+        type="button"
+        onClick={handleDelete}
+        className="
+            bg-red-600
+            text-white
+            px-6
+            py-3
+            rounded-xl
+            ml-4
+        "
+        >
+        Delete Agent
+        </button>
     </form>
   );
 }
