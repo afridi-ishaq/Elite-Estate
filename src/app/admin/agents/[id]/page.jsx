@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getAgentById } from "@/lib/agent-service";
+import Link from "next/link";
 
 export default async function EditAgentPage({
     params,
@@ -70,19 +71,23 @@ export default async function EditAgentPage({
                         rounded-xl
                         "
                     />
+                    
+                    <Link href="/admin/agents">
+                        <button
+                            type="submit"
+                            className="
+                            bg-[#0F4C5C]
+                            text-white
+                            px-6
+                            py-3
+                            rounded-xl
+                            "
+                        >
+                            Update Agent
+                        </button>
+                    </Link>
 
-                    <button
-                        type="submit"
-                        className="
-                        bg-[#0F4C5C]
-                        text-white
-                        px-6
-                        py-3
-                        rounded-xl
-                        "
-                    >
-                        Update Agent
-                    </button>
+                    
                 </form>
             </div>
         </main>
