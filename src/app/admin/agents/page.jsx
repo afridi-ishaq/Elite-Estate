@@ -7,7 +7,7 @@ export default async function AgentsPage() {
 
   return (
     <main className="pt-24 pb-24 min-h-screen">
-      <Container>
+      <Container className="max-w-full px-2 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
