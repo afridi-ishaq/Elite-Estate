@@ -12,16 +12,14 @@ export default async function PropertiesPage({
 
  const params = await searchParams;
 
-  const search =
-    params?.search || "";
+const search = params?.search || "";
+const city = params?.city || "";
 
- const properties =
+const properties =
   await getFilteredProperties(
     search,
     city
   );
-
-    const city = params?.city || "";
 
   return (
     <main className="pt-32 pb-24">
@@ -38,7 +36,7 @@ export default async function PropertiesPage({
           <p className="text-gray-600 mt-4">
             Discover luxury homes and investment opportunities.
           </p>
-          <form className="mb-8">
+          <form className="mb-8" action="/properties" method="GET">
           <input
             type="text"
             name="search"
@@ -62,12 +60,26 @@ export default async function PropertiesPage({
               p-4
             "
           >
+
             <option value="">All Cities</option>
             <option value="Islamabad">Islamabad</option>
             <option value="Lahore">Lahore</option>
             <option value="Karachi">Karachi</option>
             <option value="Peshawar">Peshawar</option>
           </select>
+          <button
+            type="submit"
+            className="
+              bg-[#0F4C5C]
+              text-white
+              px-6
+              py-4
+              rounded-xl
+              ml-2
+            "
+          >
+            Filter
+          </button>
         </form>
           
         </div>

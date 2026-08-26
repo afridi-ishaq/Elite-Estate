@@ -18,23 +18,34 @@ export async function getPropertyById(id) {
 }
 
 export async function getFilteredProperties(
-  search = ""
+  search = "",
+  city = ""
 ) {
   return await prisma.property.findMany({
     where: {
-      OR: [
+      AND: [
         {
-          title: {
-            contains: search,
-            mode: "insensitive",
-          },
+          OR: [
+            {
+              title: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              city: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
         },
-        {
-          city: {
-            contains: search,
-            mode: "insensitive",
-          },
-        },
+
+        city
+          ? {
+              city: city,
+            }
+          : {},
       ],
     },
 
