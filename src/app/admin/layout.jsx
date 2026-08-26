@@ -21,7 +21,7 @@ export default function AdminLayout({ children }) {
           <AdminSidebar />
 
           {/* Main Dashboard Content Area */}
-          <ResizablePanel defaultSize={75} minSize={50}>
+          <ResizablePanel defaultSize={1080} minSize={50}>
             <main className="h-full w-full overflow-y-auto overflow-x-hidden p-6">
               {children}
             </main>

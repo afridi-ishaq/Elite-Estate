@@ -16,9 +16,9 @@ export default function AdminSidebar() {
   return (
     <>
       <ResizablePanel
-        defaultSize={100}
+        defaultSize={200}
         minSize={80}
-        maxSize={220}
+        maxSize={200}
         collapsible={true}
         collapsedSize={80}
         onCollapse={() => setIsCollapsed(true)}
