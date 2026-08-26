@@ -1,95 +1,29 @@
 import { notFound } from "next/navigation";
 import { getAgentById } from "@/lib/agent-service";
-import Link from "next/link";   
+import EditAgentForm from "@/components/EditAgentForm";
 
 export default async function EditAgentPage({
-    params,
+  params,
 }) {
-    const { id } = await params;
+  const { id } = await params;
 
-    const agent = await getAgentById(id);
+  const agent = await getAgentById(id);
 
-    if (!agent) {
-        notFound();
-    }
+  if (!agent) {
+    notFound();
+  }
 
-    return (
-        <main className="pt-32 pb-24">
-            <div className="max-w-4xl mx-auto bg-white p-8 rounded-3xl shadow-md">
-                <h1 className="text-4xl font-bold mb-6">
-                    Edit Agent
-                </h1>
+  return (
+    <main className="pt-32 pb-24">
+      <div className="max-w-4xl mx-auto bg-white p-8 rounded-3xl shadow-md">
+        <h1 className="text-4xl font-bold mb-6">
+          Edit Agent
+        </h1>
 
-                <form className="space-y-4">
-                    <input
-                        defaultValue={agent.name}
-                        className="
-                        w-full
-                        border
-                        p-3
-                        rounded-xl
-                        "
-                    />
-
-                    <input
-                        defaultValue={agent.email}
-                        className="
-                        w-full
-                        border
-                        p-3
-                        rounded-xl
-                        "
-                    />
-
-                    <input
-                        defaultValue={agent.phone}
-                        className="
-                        w-full
-                        border
-                        p-3
-                        rounded-xl
-                        "
-                    />
-
-                    <input
-                        defaultValue={agent.title}
-                        className="
-                        w-full
-                        border
-                        p-3
-                        rounded-xl
-                        "
-                    />
-
-                    <textarea
-                        defaultValue={agent.bio}
-                        rows={5}
-                        className="
-                        w-full
-                        border
-                        p-3
-                        rounded-xl
-                        "
-                    />
-                    
-                    <Link href="/admin/agents">
-                        <button
-                            type="submit"
-                            className="
-                            bg-[#0F4C5C]
-                            text-white
-                            px-6
-                            py-3
-                            rounded-xl
-                            "
-                        >
-                            Update Agent
-                        </button>
-                    </Link>
-
-                    
-                </form>
-            </div>
-        </main>
-    );
+        <EditAgentForm
+          agent={agent}
+        />
+      </div>
+    </main>
+  );
 }
