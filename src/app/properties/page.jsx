@@ -48,6 +48,22 @@ export default async function PropertiesPage({
             "
           />
         </form>
+          <select
+            name="city"
+            defaultValue={city}
+            className="
+              border
+              border-gray-300
+              rounded-xl
+              p-4
+            "
+          >
+            <option value="">All Cities</option>
+            <option value="Islamabad">Islamabad</option>
+            <option value="Lahore">Lahore</option>
+            <option value="Karachi">Karachi</option>
+            <option value="Peshawar">Peshawar</option>
+          </select>
         </div>
 
         {properties.length === 0 ? (
