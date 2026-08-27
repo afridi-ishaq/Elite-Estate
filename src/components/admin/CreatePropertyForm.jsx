@@ -17,6 +17,7 @@ export default function CreatePropertyForm() {
     bathrooms: "",
     image: "",
     featured: false,
+    propertyType: "House",
   });
 
   function handleChange(e) {
@@ -34,6 +35,8 @@ export default function CreatePropertyForm() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    console.log(form);
 
     setLoading(true);
 
@@ -87,11 +90,14 @@ export default function CreatePropertyForm() {
       />
       <select
         name="propertyType"
+        value={form.propertyType}
+        onChange={handleChange}
         className="
           w-full
           border
-          p-3
+          border-gray-300
           rounded-xl
+          p-3
         "
       >
         <option value="House">House</option>

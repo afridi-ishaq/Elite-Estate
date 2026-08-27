@@ -21,7 +21,8 @@ export async function getFilteredProperties(
   search = "",
   city = "",
   minPrice = "",
-  maxPrice = ""
+  maxPrice = "",
+  propertyType = ""
 ) {
   return await prisma.property.findMany({
     where: {
@@ -48,6 +49,11 @@ export async function getFilteredProperties(
               city,
             }
           : {},
+        propertyType
+              ? {
+                propertyType,
+              }
+              : {},
 
         minPrice
           ? {

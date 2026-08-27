@@ -16,7 +16,7 @@ export async function POST(request) {
         image: body.image,
         featured: body.featured,
         propertyType: body.propertyType,
-      },
+      }
     });
 
     return NextResponse.json({

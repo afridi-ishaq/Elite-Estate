@@ -12,6 +12,7 @@ export default async function PropertiesPage({
 }) {
 
  const params = await searchParams;
+ 
 
 const search = params?.search || "";
 const city = params?.city || "";
@@ -19,12 +20,16 @@ const city = params?.city || "";
 const minPrice = params?.minPrice || "";
 const maxPrice = params?.maxPrice || "";
 
+const propertyType =
+  params?.propertyType || "";
+
 const properties =
   await getFilteredProperties(
     search,
     city,
     minPrice,
-    maxPrice
+    maxPrice,
+    propertyType
   );
 
   return (
@@ -72,6 +77,23 @@ const properties =
             <option value="Lahore">Lahore</option>
             <option value="Karachi">Karachi</option>
             <option value="Peshawar">Peshawar</option>
+          </select>
+          <select
+            name="propertyType"
+            defaultValue={propertyType}
+            className="
+              border
+              border-gray-300
+              rounded-xl
+              p-4
+            "
+          >
+            <option value="">All Types</option>
+            <option value="House">House</option>
+            <option value="Villa">Villa</option>
+            <option value="Apartment">Apartment</option>
+            <option value="Commercial">Commercial</option>
+            <option value="Plot">Plot</option>
           </select>
           <input
               type="number"
