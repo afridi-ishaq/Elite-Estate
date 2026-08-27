@@ -1,136 +1,284 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import Container from "./Container";
-import { HousePlus } from "lucide-react";
+import { 
+  Search, MapPin, ArrowRight, Bed, Bath, Maximize, 
+  ChevronLeft, ChevronRight, CheckCircle2 
+} from "lucide-react";
+
+// Featured properties data for the hero interactive preview card
+const FEATURED_PROPERTIES = [
+  {
+    id: 1,
+    title: "The Grand Horizon Villa",
+    location: "Sector F-6, Islamabad",
+    price: "PKR 18.5 Crore",
+    type: "buy",
+    beds: 5,
+    baths: 6,
+    sqft: "1,200 Sq. Yds",
+    image: "/images/realestate.jpg",
+  },
+  {
+    id: 2,
+    title: "Modern Executive Penthouse",
+    location: "DHA Phase 6, Lahore",
+    price: "PKR 4.2 Lakh / mo",
+    type: "rent",
+    beds: 3,
+    baths: 4,
+    sqft: "4,500 Sq. Ft",
+    image: "/images/realestate.jpg",
+  },
+];
 
 export default function Hero() {
-  return (
-    <section className="relative min-h-screen pb-20 pt-40 flex items-center overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0">
-        <img
-          src="/images/realestate.jpg"
-          alt="Luxury Property"
-          className="w-full h-full object-cover"
-        />
+  // Pure JS state declarations
+  const [searchTab, setSearchTab] = useState("buy");
+  const [activePropertyIndex, setActivePropertyIndex] = useState(0);
 
-        <div className="absolute inset-0 bg-black/50" />
-      </div>
+  const currentProperty = FEATURED_PROPERTIES[activePropertyIndex];
+
+  const handleNextProperty = () => {
+    setActivePropertyIndex((prev) => (prev + 1) % FEATURED_PROPERTIES.length);
+  };
+
+  const handlePrevProperty = () => {
+    setActivePropertyIndex((prev) =>
+      prev === 0 ? FEATURED_PROPERTIES.length - 1 : prev - 1
+    );
+  };
+
+  const searchTabs = ["buy", "rent", "commercial"];
+
+  return (
+    <section className="relative min-h-screen bg-slate-50 text-slate-900 pt-28 pb-16 overflow-hidden flex items-center">
+      {/* Background Soft Ambient Glowing Orbs */}
+      <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[#0F4C5C]/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-[#C89B3C]/15 rounded-full blur-[140px] pointer-events-none" />
 
       <Container className="relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-3xl"
-        >
-
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#05e335]/10 text-[#D9C7A7] border border-[#C89B3C]/30 text-sm font-medium tracking-wide shadow-sm mb-6">
-            {/* Indicator Wrapper */}
-            <div className="relative flex items-center justify-center w-2 h-2">
-              {/* Pulsing Ripple Effect */}
-              <motion.div
-                className="absolute w-full h-full rounded-full bg-emerald-400"
-                animate={{
-                  scale: [1, 3],
-                  opacity: [0.6, 0],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut", // Smoother for pulse rings
-                }}
-              />
-              {/* Solid Center Dot */}
-              <div className="relative w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          
+          {/* Left Column: Interactive Search & Pitch */}
+          <motion.div
+            initial={{ opacity: 0, x: -25 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="lg:col-span-7 space-y-7"
+          >
+            {/* Social Proof Trust Stack */}
+            <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm">
+              <div className="flex -space-x-2 overflow-hidden">
+                <span className="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-300" />
+                <span className="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-400" />
+                <span className="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-500" />
+              </div>
+              <span className="text-xs font-semibold text-slate-700">
+                Trusted by <span className="text-[#0F4C5C] font-bold">10,000+</span> homeowners &amp; investors
+              </span>
             </div>
 
-            {/* Text */}
-            Pakistan's Premium Real Estate Platform
-          </span>
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.12] text-slate-900">
+              Find your next space <br />
+              with <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0F4C5C] via-[#16697A] to-[#C89B3C]">absolute confidence.</span>
+            </h1>
 
+            <p className="text-slate-600 text-base sm:text-lg max-w-xl leading-relaxed">
+              Explore verified residential listings, commercial hubs, and luxury plots across Pakistan with transparent NOC verification.
+            </p>
 
-          <h1
-            className="
-              text-5xl
-              md:text-7xl
-              font-bold
-              text-white
-              leading-tight
-            "
-          >
-            Find Your
-            <span className="text-[#C89B3C]">
-              {" "}Dream Property
-            </span>
-          </h1>
+            {/* Smart Tabbed Search Engine */}
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-xl shadow-slate-200/70 max-w-2xl">
+              
+              {/* Search Mode Tabs */}
+              <div className="flex gap-2 mb-3 border-b border-slate-100 pb-2.5">
+                {searchTabs.map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setSearchTab(tab)}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${
+                      searchTab === tab
+                        ? "bg-[#0F4C5C] text-white shadow-sm"
+                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
 
-          <p
-            className="
-              text-lg
-              md:text-xl
-              text-gray-200
-              mt-6
-              max-w-2xl
-            "
-          >
-            Discover luxury homes, premium apartments,
-            commercial spaces, and investment opportunities
-            across Pakistan.
-          </p>
+              {/* Input Form */}
+              <form action="/properties" method="GET" className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                <input type="hidden" name="type" value={searchTab} />
 
-          <div className="flex flex-wrap gap-4 mt-10">
-            <button className="
-                group relative flex items-center justify-between overflow-hidden 
-                py-1.5 pl-8 pr-1.5 rounded-[30px] border border-[#0F4C5C] 
-                font-semibold text-[#0F4C5C] transition-colors duration-400 ease-out
-                hover:text-white
-                ">
-              {/* Background slide animation layer (Slides Right-to-Left) */}
-              <span className="
-                    absolute inset-0 -z-10 translate-x-full bg-[#0F4C5C] 
-                    transition-transform duration-400 ease-out 
-                    group-hover:translate-x-0
-                " />
+                {/* Location / Keyword Input */}
+                <div className="sm:col-span-5 relative flex items-center px-3 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus-within:border-[#0F4C5C] focus-within:bg-white transition">
+                  <Search size={18} className="text-slate-400 mr-2.5 shrink-0" />
+                  <input
+                    type="text"
+                    name="search"
+                    placeholder="Area, project, or title..."
+                    className="w-full bg-transparent text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
+                  />
+                </div>
 
-              {/* Button Text */}
-              <span className="whitespace-nowrap pr-6 text-white select-none">
-                Browse Properties
+                {/* City Select */}
+                <div className="sm:col-span-4 relative flex items-center px-3 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus-within:border-[#0F4C5C] focus-within:bg-white transition">
+                  <MapPin size={18} className="text-slate-400 mr-2 shrink-0" />
+                  <select
+                    name="city"
+                    className="w-full bg-transparent text-sm text-slate-800 focus:outline-none cursor-pointer"
+                  >
+                    <option value="">All Cities</option>
+                    <option value="Islamabad">Islamabad</option>
+                    <option value="Lahore">Lahore</option>
+                    <option value="Karachi">Karachi</option>
+                    <option value="Peshawar">Peshawar</option>
+                  </select>
+                </div>
+
+                {/* Search Action */}
+                <button
+                  type="submit"
+                  className="sm:col-span-3 bg-[#0F4C5C] hover:bg-[#0B3A46] active:scale-[0.98] text-white font-bold py-3 px-4 rounded-xl text-sm transition-all flex items-center justify-center gap-2 shadow-md shadow-[#0F4C5C]/20"
+                >
+                  <span>Search</span>
+                  <ArrowRight size={16} />
+                </button>
+              </form>
+
+              {/* Trending Quick Tags */}
+              <div className="flex items-center gap-2 mt-3 pt-2 text-xs text-slate-500 overflow-x-auto">
+                <span className="font-semibold text-slate-400 shrink-0">Popular:</span>
+                {["DHA Phase 6", "F-7 Islamabad", "Bahria Town", "Gulberg"].map((tag) => (
+                  <Link
+                    key={tag}
+                    href={`/properties?search=${encodeURIComponent(tag)}`}
+                    className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-md text-slate-700 transition shrink-0"
+                  >
+                    {tag}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Guarantees Line */}
+            <div className="flex flex-wrap items-center gap-6 text-xs font-semibold text-slate-500 pt-2">
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 size={16} className="text-emerald-500" />
+                NOC &amp; Registry Verified
               </span>
-
-              {/* Circular Icon Wrapper */}
-              <span className="
-                    flex items-center justify-center 
-                    w-9 h-9 rounded-full 
-                    bg-[#0F4C5C] text-white 
-                    transition-all duration-400 ease-out
-                    group-hover:bg-white group-hover:text-[#0F4C5C]
-                ">
-                <HousePlus
-                  size={18}
-                  className="transform transition-transform duration-300 group-hover:scale-110"
-                />
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 size={16} className="text-emerald-500" />
+                Zero Commission Hidden Fees
               </span>
-            </button>
+            </div>
+          </motion.div>
 
-            <button
-              className="
-                border
-                border-white
-                text-white
-                px-8
-                py-3
-                rounded-full
-                hover:bg-white
-                hover:text-black
-                transition
-              "
-            >
-              Contact Agent
-            </button>
-          </div>
-        </motion.div>
+          {/* Right Column: Interactive Featured Property Showcase Widget */}
+          <motion.div
+            initial={{ opacity: 0, x: 25 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+            className="lg:col-span-5 relative"
+          >
+            <div className="relative rounded-3xl overflow-hidden border border-slate-200/80 bg-white shadow-2xl shadow-slate-300/60">
+              
+              {/* Animated Image Container */}
+              <div className="relative h-[420px] w-full overflow-hidden">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentProperty.id}
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="absolute inset-0"
+                  >
+                    <Image
+                      src={currentProperty.image}
+                      alt={currentProperty.title}
+                      fill
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 40vw"
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Top Badge Overlay */}
+                <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+                  <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-[#C89B3C] text-xs font-bold uppercase tracking-wider border border-[#C89B3C]/30">
+                    Featured Choice
+                  </span>
+
+                  {/* Manual Carousel Controls */}
+                  <div className="flex items-center gap-1.5 bg-slate-900/60 backdrop-blur-md p-1 rounded-full border border-white/20">
+                    <button
+                      type="button"
+                      onClick={handlePrevProperty}
+                      className="p-1.5 text-white hover:text-[#C89B3C] transition"
+                      aria-label="Previous property"
+                    >
+                      <ChevronLeft size={16} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleNextProperty}
+                      className="p-1.5 text-white hover:text-[#C89B3C] transition"
+                      aria-label="Next property"
+                    >
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Property Brief (Floating Glass Box inside image bottom) */}
+                <div className="absolute bottom-4 left-4 right-4 p-4 rounded-2xl bg-white/95 backdrop-blur-md text-slate-900 shadow-xl space-y-3">
+                  <div className="flex justify-between items-start gap-2">
+                    <div>
+                      <h3 className="font-bold text-base text-slate-900 leading-snug">
+                        {currentProperty.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                        <MapPin size={12} className="text-[#0F4C5C]" /> {currentProperty.location}
+                      </p>
+                    </div>
+                    <p className="text-base font-extrabold text-[#0F4C5C] shrink-0">
+                      {currentProperty.price}
+                    </p>
+                  </div>
+
+                  {/* Property Quick Specs Bar */}
+                  <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-slate-600 text-xs">
+                    <div className="flex items-center gap-1.5 font-medium">
+                      <Bed size={14} className="text-slate-400" />
+                      <span>{currentProperty.beds} Beds</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 font-medium">
+                      <Bath size={14} className="text-slate-400" />
+                      <span>{currentProperty.baths} Baths</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 font-medium">
+                      <Maximize size={14} className="text-slate-400" />
+                      <span>{currentProperty.sqft}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </motion.div>
+
+        </div>
       </Container>
     </section>
   );
