@@ -42,7 +42,7 @@ const properties =
           <p className="text-gray-600 mt-4">
             Discover luxury homes and investment opportunities.
           </p>
-          <form className="mb-8" action="/properties" method="GET">
+          <form className="grid md:grid-cols-5 gap-3 mb-8" action="/properties" method="GET">
           <input
             type="text"
             name="search"
@@ -73,6 +73,31 @@ const properties =
             <option value="Karachi">Karachi</option>
             <option value="Peshawar">Peshawar</option>
           </select>
+          <input
+              type="number"
+              name="minPrice"
+              defaultValue={minPrice}
+              placeholder="Min Price"
+              className="
+                border
+                border-gray-300
+                rounded-xl
+                p-4
+              "
+            />
+
+            <input
+              type="number"
+              name="maxPrice"
+              defaultValue={maxPrice}
+              placeholder="Max Price"
+              className="
+                border
+                border-gray-300
+                rounded-xl
+                p-4
+              "
+            />
           <button
             type="submit"
             className="
