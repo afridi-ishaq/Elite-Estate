@@ -6,6 +6,7 @@ import {
   getFilteredProperties,
 } from "@/lib/property-service";
 
+
 export default async function PropertiesPage({
   searchParams,
 }) {
@@ -15,10 +16,15 @@ export default async function PropertiesPage({
 const search = params?.search || "";
 const city = params?.city || "";
 
+const minPrice = params?.minPrice || "";
+const maxPrice = params?.maxPrice || "";
+
 const properties =
   await getFilteredProperties(
     search,
-    city
+    city,
+    minPrice,
+    maxPrice
   );
 
   return (
