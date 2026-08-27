@@ -15,6 +15,7 @@ export async function POST(request) {
         bathrooms: Number(body.bathrooms),
         image: body.image,
         featured: body.featured,
+        propertyType: body.propertyType,
       },
     });
 

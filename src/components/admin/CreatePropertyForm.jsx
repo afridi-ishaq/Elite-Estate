@@ -58,6 +58,7 @@ export default function CreatePropertyForm() {
       router.refresh();
     }
   }
+  
 
   return (
     <form
@@ -84,6 +85,21 @@ export default function CreatePropertyForm() {
         onChange={handleChange}
         className="w-full border rounded-xl p-3"
       />
+      <select
+        name="propertyType"
+        className="
+          w-full
+          border
+          p-3
+          rounded-xl
+        "
+      >
+        <option value="House">House</option>
+        <option value="Villa">Villa</option>
+        <option value="Apartment">Apartment</option>
+        <option value="Commercial">Commercial</option>
+        <option value="Plot">Plot</option>
+      </select>
 
       <input
         name="price"
@@ -121,6 +137,7 @@ export default function CreatePropertyForm() {
         />
         Featured Property
       </label>
+      
 
       <button
         type="submit"

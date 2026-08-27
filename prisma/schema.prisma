@@ -35,22 +35,24 @@ model User {
 }
 
 model Property {
-  id          String   @id @default(cuid())
-  title       String
-  description String
+  id            String   @id @default(cuid())
+  title         String
+  description   String
 
-  city        String
-  price       Float
+  city          String
+  price         Float
 
-  bedrooms    Int
-  bathrooms   Int
+  bedrooms      Int
+  bathrooms     Int
 
-  image       String
+  image         String
 
-  featured    Boolean  @default(false)
+  propertyType  String   @default("House")
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  featured      Boolean  @default(false)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Lead {

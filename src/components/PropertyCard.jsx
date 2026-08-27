@@ -48,6 +48,9 @@ export default function PropertyCard({ property }) {
         <p className="text-gray-500 mt-2">
           {property.city}
         </p>
+        <p className="text-sm text-gray-500">
+          {property.propertyType}
+        </p>
 
         <div className="flex gap-4 mt-4 text-sm text-gray-600">
           <span>{property.bedrooms} Beds</span>
