@@ -1,14 +1,23 @@
+import PropertyCard from "@/components/PropertyCard";
 import { notFound } from "next/navigation";
 import Container from "@/components/Container";
 import InquiryForm from "@/components/InquiryForm";
-import { getPropertyById } from "@/lib/property-service";
-
+import {
+  getPropertyById,
+  getRelatedProperties,
+} from "@/lib/property-service";
 export default async function PropertyDetailsPage({
   params,
 }) {
   const { id } = await params;
 
   const property = await getPropertyById(id);
+
+  const relatedProperties =
+    await getRelatedProperties(
+      property.city,
+      property.id
+    );
 
   if (!property) {
     notFound();
@@ -72,6 +81,22 @@ export default async function PropertyDetailsPage({
             </div>
           </div>
         </div>
+        {relatedProperties.length > 0 && (
+          <div className="mt-24">
+            <h2 className="text-4xl font-bold mb-10">
+              Related Properties
+            </h2>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {relatedProperties.map((property) => (
+                <PropertyCard
+                  key={property.id}
+                  property={property}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </Container>
     </main>
   );

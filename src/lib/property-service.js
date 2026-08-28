@@ -78,3 +78,22 @@ export async function getFilteredProperties(
     },
   });
 }
+export async function getRelatedProperties(
+  city,
+  currentPropertyId
+) {
+  return await prisma.property.findMany({
+    where: {
+      city,
+      NOT: {
+        id: currentPropertyId,
+      },
+    },
+
+    take: 3,
+
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
