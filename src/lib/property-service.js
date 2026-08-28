@@ -97,3 +97,17 @@ export async function getRelatedProperties(
     },
   });
 }
+
+export async function getFeaturedProperties() {
+  return await prisma.property.findMany({
+    where: {
+      featured: true,
+    },
+
+    take: 6,
+
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
