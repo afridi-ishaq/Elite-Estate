@@ -1,12 +1,10 @@
-"use client";
-
+import Link from "next/link";
 import Container from "./Container";
-import { properties } from "@/data/properties";
+import { getFeaturedProperties } from "@/lib/property-service";
 
-export default function FeaturedProperties() {
-  const featuredProperties = properties.filter(
-    (property) => property.featured
-  );
+export default async function FeaturedProperties() {
+  const featuredProperties =
+    await getFeaturedProperties();
 
   return (
     <section className="py-24 bg-white">
@@ -53,9 +51,12 @@ export default function FeaturedProperties() {
                   PKR {property.price.toLocaleString()}
                 </p>
 
-                <button
+                <Link
+                  href={`/properties/${property.id}`}
                   className="
                     mt-5
+                    block
+                    text-center
                     w-full
                     bg-[#0F4C5C]
                     text-white
@@ -64,7 +65,7 @@ export default function FeaturedProperties() {
                   "
                 >
                   View Details
-                </button>
+                </Link>
               </div>
             </div>
           ))}
