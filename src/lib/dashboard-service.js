@@ -84,39 +84,7 @@ export async function getPropertiesByCity() {
   );
 }
 
-// export async function getLeadsOverTime() {
-//   try {
-//     const leads = await prisma.lead.findMany({
-//       orderBy: {
-//         createdAt: "asc",
-//       },
-//       select: {
-//         createdAt: true,
-//       },
-//     });
 
-//     if (!leads.length) return [];
-
-//     // Group leads by Month (e.g., "Jan", "Feb")
-//     const monthCounts = leads.reduce((acc, lead) => {
-//       const monthName = new Date(lead.createdAt).toLocaleString("en-US", {
-//         month: "short",
-//       });
-
-//       acc[monthName] = (acc[monthName] || 0) + 1;
-//       return acc;
-//     }, {});
-
-//     // Convert object to array for Recharts
-//     return Object.keys(monthCounts).map((month) => ({
-//       month,
-//       leads: monthCounts[month],
-//     }));
-//   } catch (error) {
-//     console.error("Error fetching leads growth over time:", error);
-//     return [];
-//   }
-// }
 
 
 export async function getLeadsOverTime(range = "3M") {
