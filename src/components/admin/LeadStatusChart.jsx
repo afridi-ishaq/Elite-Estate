@@ -1,168 +1,190 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
+  PieChart,
+  Pie,
+  Cell,
   Tooltip,
   ResponsiveContainer,
-  Cell,
-  CartesianGrid,
+  Sector,
 } from "recharts";
 
-// Real estate sales pipeline stages & brand-aligned palette
+// Professional Real Estate CRM Palette
 const defaultData = [
-  { name: "New", value: 40, color: "#0F4C5C" },
-  { name: "Contacted", value: 30, color: "#2A9D8F" },
-  { name: "Qualified", value: 24, color: "#E9C46A" },
-  { name: "Negotiating", value: 18, color: "#F4A261" },
-  { name: "Unqualified", value: 12, color: "#E76F51" },
-  { name: "Closed", value: 28, color: "#1D3557" },
+  { name: "New", value: 40, color: "#4F46E5" },          // Deep Indigo
+  { name: "Contacted", value: 30, color: "#0284C7" },    // Slate Sky Blue
+  { name: "Qualified", value: 24, color: "#0D9488" },    // Muted Teal
+  { name: "Negotiating", value: 18, color: "#D97706" },  // Amber Warmth
+  { name: "Unqualified", value: 12, color: "#64748B" },  // Muted Slate Gray
+  { name: "Closed", value: 28, color: "#059669" },       // Emerald Victory Green
 ];
 
-export default function LeadStatusChart({ data = defaultData }) {
-  const [focusIndex, setFocusIndex] = useState(null);
-
-  const totalLeads = useMemo(
-    () => data.reduce((acc, item) => acc + item.value, 0),
-    [data]
-  );
-
-  return (
-    <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 w-full font-sans">
-      {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-4 border-b border-slate-100 gap-2">
-        <div>
-          <h3 className="text-lg font-bold text-slate-900 tracking-tight">
-            Lead Status Pipeline
-          </h3>
-          <p className="text-xs text-slate-400 mt-0.5 font-medium">
-            Active real estate opportunities by stage
+// Dark backdrop tooltip matching PropertiesCityChart
+function GaugeTooltip({ active, payload }) {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-slate-950/95 border border-slate-800 text-white px-3.5 py-2.5 rounded-xl shadow-2xl backdrop-blur-md transition-all duration-150 ease-out">
+        <p className="text-[11px] font-medium uppercase tracking-wider text-slate-400 mb-1">
+          {data.name}
+        </p>
+        <div className="flex items-center gap-2">
+          <span
+            className="w-2 h-2 rounded-full shadow-sm"
+            style={{ backgroundColor: data.color }}
+          />
+          <p className="text-xs font-medium text-slate-200">
+            Leads:{" "}
+            <span className="font-semibold text-white ml-0.5">
+              {data.value?.toLocaleString() ?? 0}
+            </span>
           </p>
         </div>
-        
-        <div className="flex items-center gap-3">
-          <div className="bg-slate-50 border border-slate-100 px-3.5 py-1.5 rounded-2xl flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-            <span className="text-xs font-semibold text-slate-700">
-              Total: {totalLeads} Leads
-            </span>
-          </div>
+      </div>
+    );
+  }
+  return null;
+}
+
+// Active shape expanding smoothly on hover
+const renderActiveShape = (props) => {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+  return (
+    <g>
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius - 3}
+        outerRadius={outerRadius + 6}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+      />
+    </g>
+  );
+};
+
+export default function LeadStatusGauge({ data = defaultData }) {
+  const [activeIndex, setActiveIndex] = useState(null);
+
+  const totalLeads = useMemo(() => {
+    return data.reduce((acc, curr) => acc + (curr.value || 0), 0);
+  }, [data]);
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm w-full min-w-0 flex flex-col items-center justify-center min-h-[320px] text-center">
+        <p className="text-sm font-medium text-slate-400">No lead data available</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200 w-full min-w-0 flex flex-col gap-6 font-sans">
+      {/* Header Section */}
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-base font-semibold text-slate-900 tracking-tight">
+            Lead Status Distribution
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Real Estate Conversion & Pipeline Overview
+          </p>
+        </div>
+
+        {/* Header Badge */}
+        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-medium text-slate-600">
+          <span>Total:</span>
+          <span className="text-slate-900 font-semibold">
+            {totalLeads.toLocaleString()}
+          </span>
         </div>
       </div>
 
-      {/* Chart Canvas */}
-      <div className="h-80 w-full">
+      {/* Semi-Donut Canvas */}
+      <div className="w-full h-[240px] relative flex items-center justify-center">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            layout="vertical"
-            data={data}
-            margin={{ top: 0, right: 30, left: 20, bottom: 0 }}
-            barCategoryGap="22%"
-          >
-            {/* SVG Gradient Definitions */}
-            <defs>
-              {data.map((entry, index) => (
-                <linearGradient
-                  key={`gradient-${index}`}
-                  id={`leadGrad-${index}`}
-                  x1="0"
-                  y1="0"
-                  x2="1"
-                  y2="0"
-                >
-                  <stop offset="0%" stopColor={entry.color} stopOpacity={0.8} />
-                  <stop offset="100%" stopColor={entry.color} stopOpacity={1} />
-                </linearGradient>
-              ))}
-            </defs>
-
-            <CartesianGrid
-              horizontal={false}
-              stroke="#F1F5F9"
-              strokeDasharray="4 4"
-            />
-
-            <XAxis
-              type="number"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#94A3B8", fontSize: 11, fontWeight: 500 }}
-              domain={[0, "dataMax + 5"]}
-            />
-
-            <YAxis
-              type="category"
-              dataKey="name"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#334155", fontSize: 12, fontWeight: 600 }}
-              width={90}
-            />
-
-            <Tooltip
-              cursor={{ fill: "rgba(241, 245, 249, 0.6)" }}
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  const item = payload[0].payload;
-                  const percentage = ((item.value / totalLeads) * 100).toFixed(1);
-
-                  return (
-                    <div className="bg-slate-900/95 backdrop-blur-md text-white px-3.5 py-2.5 rounded-xl shadow-xl border border-slate-800 text-xs flex flex-col gap-1 min-w-[140px]">
-                      <div className="flex items-center justify-between gap-4">
-                        <span className="font-semibold text-slate-300">
-                          {item.name}
-                        </span>
-                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
-                      </div>
-                      <div className="flex items-baseline justify-between gap-2 mt-1">
-                        <span className="text-xl font-bold text-white">
-                          {item.value}
-                        </span>
-                        <span className="text-slate-400 font-medium">
-                          {percentage}% of total
-                        </span>
-                      </div>
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-
-            <Bar
+          <PieChart>
+            <Pie
+              activeIndex={activeIndex}
+              activeShape={renderActiveShape}
+              data={data}
+              cx="50%"
+              cy="75%"
+              startAngle={180}
+              endAngle={0}
+              innerRadius={85}
+              outerRadius={118}
+              paddingAngle={4}
               dataKey="value"
-              radius={[0, 8, 8, 0]}
-              onMouseEnter={(_, index) => setFocusIndex(index)}
-              onMouseLeave={() => setFocusIndex(null)}
+              onMouseEnter={(_, index) => setActiveIndex(index)}
+              onMouseLeave={() => setActiveIndex(null)}
             >
               {data.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={`url(#leadGrad-${index})`}
-                  opacity={focusIndex === null || focusIndex === index ? 1 : 0.4}
-                  className="transition-opacity duration-200 cursor-pointer"
+                  fill={entry.color || defaultData[index % defaultData.length].color}
+                  className="transition-all duration-150 cursor-pointer outline-none"
                 />
               ))}
-            </Bar>
-          </BarChart>
+            </Pie>
+
+            <Tooltip content={<GaugeTooltip />} cursor={false} />
+          </PieChart>
         </ResponsiveContainer>
+
+        {/* Center Readout */}
+        <div className="absolute top-[50%] flex flex-col items-center justify-center pointer-events-none text-center">
+          <span className="text-3xl font-bold text-slate-900 tracking-tight">
+            {activeIndex !== null ? data[activeIndex].value : totalLeads}
+          </span>
+          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider mt-0.5">
+            {activeIndex !== null ? data[activeIndex].name : "Total Pipeline"}
+          </span>
+          <span
+            className="text-[10px] font-semibold mt-0.5 transition-colors duration-150"
+            style={{
+              color: activeIndex !== null ? data[activeIndex].color : "#4F46E5",
+            }}
+          >
+            {activeIndex !== null
+              ? `${((data[activeIndex].value / (totalLeads || 1)) * 100).toFixed(1)}% Share`
+              : "100% Volume"}
+          </span>
+        </div>
       </div>
 
-      {/* Footer Metrics Overview */}
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mt-4 pt-4 border-t border-slate-100">
-        {data.map((item, index) => (
-          <div key={index} className="text-center p-2 rounded-xl bg-slate-50/60">
-            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider truncate">
-              {item.name}
-            </p>
-            <p className="text-sm font-bold text-slate-800 mt-0.5">
-              {item.value}
-            </p>
-          </div>
-        ))}
+      {/* Interactive Legend Pills */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-4 border-t border-slate-100">
+        {data.map((item, index) => {
+          const isSelected = activeIndex === index;
+          return (
+            <button
+              key={index}
+              onMouseEnter={() => setActiveIndex(index)}
+              onMouseLeave={() => setActiveIndex(null)}
+              className={`flex items-center justify-between p-2.5 rounded-xl border text-xs transition-all duration-150 text-left ${
+                isSelected
+                  ? "bg-slate-50/90 border-slate-300 shadow-sm"
+                  : "bg-white border-slate-100 hover:bg-slate-50/60"
+              }`}
+            >
+              <div className="flex items-center gap-2 truncate">
+                <span
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                  style={{ backgroundColor: item.color }}
+                />
+                <span className="font-medium text-slate-600 truncate">
+                  {item.name}
+                </span>
+              </div>
+              <span className="font-semibold text-slate-900 ml-2 shrink-0">
+                {item.value}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
