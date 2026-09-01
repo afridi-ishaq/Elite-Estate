@@ -12,6 +12,7 @@ import {
   getLeadStatusData,
   getRecentLeads,
   getRecentProperties,
+  getLeadsOverTime,
 } from "@/lib/dashboard-service";
 
 import {
@@ -26,19 +27,24 @@ import {
 } from "lucide-react";
 
 export default async function AdminPage() {
-  const [cityData, stats, chartData, recentLeads, recentProperties] =
-    await Promise.all([
-      getPropertiesByCity(),
-      getDashboardStats(),
-      getLeadStatusData(),
-      getRecentLeads(),
-      getRecentProperties(),
-    ]);
+  const [
+    cityData,
+    stats,
+    chartData,
+    recentLeads,
+    recentProperties,
+    leadsOverTime,
+  ] = await Promise.all([
+    getPropertiesByCity(),
+    getDashboardStats(),
+    getLeadStatusData(),
+    getRecentLeads(),
+    getRecentProperties(),
+    getLeadsOverTime(),
+  ]);
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 pt-28 pb-20 selection:bg-amber-100 selection:text-amber-900">
-      
-
       <Container>
         {/* Header Banner */}
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10 pb-8 border-b border-slate-200">
@@ -162,7 +168,7 @@ export default async function AdminPage() {
               </div>
             </div>
             <div className="w-full h-full min-h-75">
-              <LeadsChart />
+              <LeadsChart initialData={leadsOverTime} />
             </div>
           </div>
 
