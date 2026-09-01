@@ -1,95 +1,130 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  PieChart,
-  Pie,
-  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
   Tooltip,
   ResponsiveContainer,
-  Legend,
-  Sector,
+  Cell,
+  CartesianGrid,
 } from "recharts";
 
+// Real estate sales pipeline stages & brand-aligned palette
 const defaultData = [
   { name: "New", value: 40, color: "#0F4C5C" },
-  { name: "Contacted", value: 30, color: "#E36414" },
-  { name: "Qualified", value: 20, color: "#FB8B24" },
-  { name: "Negotiating", value: 27, color: "#5F0F40" },
-  { name: "Unqualified", value: 18, color: "#9A031E" },
-  { name: "Closed", value: 23, color: "#2A9D8F" },
+  { name: "Contacted", value: 30, color: "#2A9D8F" },
+  { name: "Qualified", value: 24, color: "#E9C46A" },
+  { name: "Negotiating", value: 18, color: "#F4A261" },
+  { name: "Unqualified", value: 12, color: "#E76F51" },
+  { name: "Closed", value: 28, color: "#1D3557" },
 ];
 
-// Renders an enlarged sector when a slice is hovered
-const renderActiveShape = (props) => {
-  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
-  return (
-    <g>
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius}
-        outerRadius={outerRadius + 6}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-      />
-    </g>
-  );
-};
-
 export default function LeadStatusChart({ data = defaultData }) {
-  const [activeIndex, setActiveIndex] = useState(null);
+  const [focusIndex, setFocusIndex] = useState(null);
 
-  const totalLeads = data.reduce((acc, curr) => acc + curr.value, 0);
+  const totalLeads = useMemo(
+    () => data.reduce((acc, item) => acc + item.value, 0),
+    [data]
+  );
 
   return (
-    <div className="bg-white p-6 rounded-3xl shadow-md w-full border border-slate-100">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-xl font-bold text-slate-800">
-          Lead Status Distribution
-        </h3>
-        <span className="text-xs font-semibold px-3 py-1 bg-slate-100 text-slate-600 rounded-full">
-          Total: {totalLeads}
-        </span>
+    <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 w-full font-sans">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-4 border-b border-slate-100 gap-2">
+        <div>
+          <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+            Lead Status Pipeline
+          </h3>
+          <p className="text-xs text-slate-400 mt-0.5 font-medium">
+            Active real estate opportunities by stage
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <div className="bg-slate-50 border border-slate-100 px-3.5 py-1.5 rounded-2xl flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+            <span className="text-xs font-semibold text-slate-700">
+              Total: {totalLeads} Leads
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="h-80 w-full relative">
+      {/* Chart Canvas */}
+      <div className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              activeIndex={activeIndex}
-              activeShape={renderActiveShape}
-              data={data}
-              cx="50%"
-              cy="50%"
-              innerRadius={70}
-              outerRadius={95}
-              paddingAngle={4}
-              dataKey="value"
-              onMouseEnter={(_, index) => setActiveIndex(index)}
-              onMouseLeave={() => setActiveIndex(null)}
-            >
+          <BarChart
+            layout="vertical"
+            data={data}
+            margin={{ top: 0, right: 30, left: 20, bottom: 0 }}
+            barCategoryGap="22%"
+          >
+            {/* SVG Gradient Definitions */}
+            <defs>
               {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={entry.color || defaultData[index % defaultData.length].color}
-                  className="transition-all duration-300 cursor-pointer outline-none"
-                />
+                <linearGradient
+                  key={`gradient-${index}`}
+                  id={`leadGrad-${index}`}
+                  x1="0"
+                  y1="0"
+                  x2="1"
+                  y2="0"
+                >
+                  <stop offset="0%" stopColor={entry.color} stopOpacity={0.8} />
+                  <stop offset="100%" stopColor={entry.color} stopOpacity={1} />
+                </linearGradient>
               ))}
-            </Pie>
+            </defs>
+
+            <CartesianGrid
+              horizontal={false}
+              stroke="#F1F5F9"
+              strokeDasharray="4 4"
+            />
+
+            <XAxis
+              type="number"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#94A3B8", fontSize: 11, fontWeight: 500 }}
+              domain={[0, "dataMax + 5"]}
+            />
+
+            <YAxis
+              type="category"
+              dataKey="name"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#334155", fontSize: 12, fontWeight: 600 }}
+              width={90}
+            />
 
             <Tooltip
+              cursor={{ fill: "rgba(241, 245, 249, 0.6)" }}
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
-                  const item = payload[0];
+                  const item = payload[0].payload;
                   const percentage = ((item.value / totalLeads) * 100).toFixed(1);
+
                   return (
-                    <div className="bg-slate-900 text-white text-xs px-3 py-2 rounded-xl shadow-xl border border-slate-800">
-                      <p className="font-semibold">{item.name}</p>
-                      <p className="text-teal-300">
-                        Leads: <span className="font-bold">{item.value}</span> ({percentage}%)
-                      </p>
+                    <div className="bg-slate-900/95 backdrop-blur-md text-white px-3.5 py-2.5 rounded-xl shadow-xl border border-slate-800 text-xs flex flex-col gap-1 min-w-[140px]">
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="font-semibold text-slate-300">
+                          {item.name}
+                        </span>
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                      </div>
+                      <div className="flex items-baseline justify-between gap-2 mt-1">
+                        <span className="text-xl font-bold text-white">
+                          {item.value}
+                        </span>
+                        <span className="text-slate-400 font-medium">
+                          {percentage}% of total
+                        </span>
+                      </div>
                     </div>
                   );
                 }
@@ -97,29 +132,37 @@ export default function LeadStatusChart({ data = defaultData }) {
               }}
             />
 
-            <Legend
-              verticalAlign="bottom"
-              height={36}
-              iconType="circle"
-              iconSize={8}
-              formatter={(value) => (
-                <span className="text-xs font-medium text-slate-600 mr-2">
-                  {value}
-                </span>
-              )}
-            />
-          </PieChart>
+            <Bar
+              dataKey="value"
+              radius={[0, 8, 8, 0]}
+              onMouseEnter={(_, index) => setFocusIndex(index)}
+              onMouseLeave={() => setFocusIndex(null)}
+            >
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={`url(#leadGrad-${index})`}
+                  opacity={focusIndex === null || focusIndex === index ? 1 : 0.4}
+                  className="transition-opacity duration-200 cursor-pointer"
+                />
+              ))}
+            </Bar>
+          </BarChart>
         </ResponsiveContainer>
+      </div>
 
-        {/* Center overlay text for donut metrics */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-8">
-          <span className="text-2xl font-extrabold text-slate-800">
-            {activeIndex !== null ? data[activeIndex].value : totalLeads}
-          </span>
-          <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
-            {activeIndex !== null ? data[activeIndex].name : "Total Leads"}
-          </span>
-        </div>
+      {/* Footer Metrics Overview */}
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mt-4 pt-4 border-t border-slate-100">
+        {data.map((item, index) => (
+          <div key={index} className="text-center p-2 rounded-xl bg-slate-50/60">
+            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider truncate">
+              {item.name}
+            </p>
+            <p className="text-sm font-bold text-slate-800 mt-0.5">
+              {item.value}
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );
