@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function updateProperty(id, formData) {
+  console.log("Updating property:", id);
+
   await prisma.property.update({
     where: {
       id,
@@ -15,9 +17,11 @@ export async function updateProperty(id, formData) {
       price: Number(formData.get("price")),
       bedrooms: Number(formData.get("bedrooms")),
       bathrooms: Number(formData.get("bathrooms")),
-      image: formData.get("image"),
+      images: [formData.get("image")],
     },
   });
+
+  console.log("Property updated");
 
   revalidatePath("/admin/properties");
 }

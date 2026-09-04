@@ -45,6 +45,18 @@ export default async function EditPropertyPage({
             className="w-full border p-3 rounded-xl"
           />
 
+          <select
+            name="propertyType"
+            defaultValue={property.propertyType || "House"}
+            className="w-full border p-3 rounded-xl"
+          >
+            <option value="House">House</option>
+            <option value="Villa">Villa</option>
+            <option value="Apartment">Apartment</option>
+            <option value="Commercial">Commercial</option>
+            <option value="Plot">Plot</option>
+          </select>
+
           <input
             name="price"
             type="number"
@@ -68,7 +80,7 @@ export default async function EditPropertyPage({
 
           <input
             name="image"
-            defaultValue={property.image}
+            defaultValue={property.images?.[0] || ""}
             className="w-full border p-3 rounded-xl"
           />
 
