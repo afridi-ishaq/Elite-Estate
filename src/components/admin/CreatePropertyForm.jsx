@@ -18,6 +18,9 @@ export default function CreatePropertyForm() {
     image: "",
     featured: false,
     propertyType: "House",
+    image2: "",
+    image3: "",
+    image4: "",
   });
 
   function handleChange(e) {
@@ -61,7 +64,7 @@ export default function CreatePropertyForm() {
       router.refresh();
     }
   }
-  
+
 
   return (
     <form
@@ -134,6 +137,26 @@ export default function CreatePropertyForm() {
         onChange={handleChange}
         className="w-full border rounded-xl p-3"
       />
+      <input
+        name="image2"
+        placeholder="Image URL 2"
+        onChange={handleChange}
+        className="w-full border rounded-xl p-3"
+      />
+
+      <input
+        name="image3"
+        placeholder="Image URL 3"
+        onChange={handleChange}
+        className="w-full border rounded-xl p-3"
+      />
+
+      <input
+        name="image4"
+        placeholder="Image URL 4"
+        onChange={handleChange}
+        className="w-full border rounded-xl p-3"
+      />
 
       <label className="flex gap-2">
         <input
@@ -143,7 +166,7 @@ export default function CreatePropertyForm() {
         />
         Featured Property
       </label>
-      
+
 
       <button
         type="submit"

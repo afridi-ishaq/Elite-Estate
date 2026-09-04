@@ -13,7 +13,12 @@ export async function POST(request) {
         price: Number(body.price),
         bedrooms: Number(body.bedrooms),
         bathrooms: Number(body.bathrooms),
-        image: body.image,
+        images: [
+          body.image,
+          body.image2,
+          body.image3,
+          body.image4,
+        ].filter(Boolean),
         featured: body.featured,
         propertyType: body.propertyType,
       }

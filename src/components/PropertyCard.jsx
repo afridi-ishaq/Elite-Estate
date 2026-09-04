@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PropertyGallery from "@/components/PropertyGallery";
 
 export default function PropertyCard({ property }) {
   return (
@@ -14,10 +15,12 @@ export default function PropertyCard({ property }) {
       "
     >
       <div className="relative">
-        <img
-          src={property.image}
-          alt={property.title}
-          className="h-64 w-full object-cover"
+        <PropertyGallery
+          images={
+            property.images?.length
+              ? property.images
+              : [property.image]
+          }
         />
 
         {property.featured && (
