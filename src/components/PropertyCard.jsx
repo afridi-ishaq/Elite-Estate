@@ -14,7 +14,7 @@ export default function PropertyCard({ property }) {
         duration-300
       "
     >
-      <div className="relative">
+      <div className="relative ">
         <PropertyGallery
           images={
             property.images?.length
