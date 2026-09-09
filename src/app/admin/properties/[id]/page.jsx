@@ -79,31 +79,23 @@ export default async function EditPropertyPage({
           />
 
           <input
-            name="image"
-            placeholder="Main Image"
-            defaultValue={property.image}
-            className="w-full border p-3 rounded-xl"
+            name="image1"
+            defaultValue={property.images?.[0] || ""}
           />
 
           <input
             name="image2"
-            placeholder="Image 2"
-            defaultValue={property.images?.[0] || ""}
-            className="w-full border p-3 rounded-xl"
+            defaultValue={property.images?.[1] || ""}
           />
 
           <input
             name="image3"
-            placeholder="Image 3"
-            defaultValue={property.images?.[1] || ""}
-            className="w-full border p-3 rounded-xl"
+            defaultValue={property.images?.[2] || ""}
           />
 
           <input
             name="image4"
-            placeholder="Image 4"
-            defaultValue={property.images?.[2] || ""}
-            className="w-full border p-3 rounded-xl"
+            defaultValue={property.images?.[3] || ""}
           />
 
           <button

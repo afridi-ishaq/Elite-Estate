@@ -17,7 +17,13 @@ export async function updateProperty(id, formData) {
       price: Number(formData.get("price")),
       bedrooms: Number(formData.get("bedrooms")),
       bathrooms: Number(formData.get("bathrooms")),
-      images: [formData.get("image")],
+
+      images: [
+        formData.get("image1"),
+        formData.get("image2"),
+        formData.get("image3"),
+        formData.get("image4"),
+      ].filter(Boolean),
     },
   });
 
