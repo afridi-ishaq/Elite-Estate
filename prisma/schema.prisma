@@ -87,6 +87,9 @@ model Agent {
 
   image       String?
 
+  experience  Int?
+  listings    Int?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
