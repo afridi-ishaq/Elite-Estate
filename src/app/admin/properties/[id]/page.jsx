@@ -3,10 +3,12 @@ import { updateProperty } from "@/actions/property-actions";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Building2, Image as ImageIcon, MapPin, Tag } from "lucide-react";
+import { getAgents } from "@/lib/agent-service";
 
 export default async function EditPropertyPage({ params }) {
   const { id } = await params;
   const property = await getPropertyById(id);
+  const agents = await getAgents();
 
   async function update(formData) {
     "use server";
@@ -186,6 +188,30 @@ export default async function EditPropertyPage({ params }) {
                   </div>
                 ))}
               </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Assigned Agent
+              </label>
+
+              <select
+                name="agentId"
+                defaultValue={property.agentId || ""}
+                className="w-full border p-3 rounded-xl"
+              >
+                <option value="">
+                  No Agent Assigned
+                </option>
+
+                {agents.map((agent) => (
+                  <option
+                    key={agent.id}
+                    value={agent.id}
+                  >
+                    {agent.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Form Actions */}

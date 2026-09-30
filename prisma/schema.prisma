@@ -35,25 +35,28 @@ model User {
 }
 
 model Property {
-  id          String   @id @default(cuid())
-  title       String
-  description String
+  id           String   @id @default(cuid())
 
-  city        String
-  price       Float
+  title        String
+  description  String
 
-  bedrooms    Int
-  bathrooms   Int
+  city         String
+  price        Float
 
+  bedrooms     Int
+  bathrooms    Int
 
-  images      String[]
+  images       String[]
 
-  featured    Boolean @default(false)
+  featured     Boolean @default(false)
 
   propertyType String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  agentId      String?
+  agent        Agent? @relation(fields: [agentId], references: [id])
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Lead {
@@ -89,6 +92,8 @@ model Agent {
 
   experience  Int?
   listings    Int?
+
+  properties  Property[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
