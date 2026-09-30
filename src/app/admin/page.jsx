@@ -59,7 +59,7 @@ export default async function AdminPage() {
               Admin Dashboard
             </h1>
             <p className="text-slate-600 text-sm md:text-base mt-2">
-              Welcome back to <span className="text-slate-900 font-semibold text-xl">Elite Estates</span> operational command center.
+              Welcome back to <span className="text-[#0F4C5C] font-semibold text-xl">Elite Estates</span> operational command center.
             </p>
           </div>
 
