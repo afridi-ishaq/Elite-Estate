@@ -147,13 +147,36 @@ export default async function AgentProfilePage({ params }) {
               Portfolio
             </p>
 
-            <h2 className="mt-3 text-3xl font-semibold text-[#0F4C5C]">
-              Properties Managed by {agent.name.split(" ")[0]}
-            </h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+  {agent.properties.map((property) => (
+    <div
+      key={property.id}
+      className="border rounded-2xl overflow-hidden bg-white"
+    >
+      <img
+        src={property.images?.[0]}
+        alt={property.title}
+        className="h-52 w-full object-cover"
+      />
 
-            <p className="mt-4 text-gray-600">
-              Properties handled by this agent will appear here.
-            </p>
+      <div className="p-4">
+        <h3 className="font-bold">
+          {property.title}
+        </h3>
+
+        <p className="text-gray-500 text-sm">
+          {property.city}
+        </p>
+
+        <p className="font-bold text-[#0F4C5C] mt-2">
+          PKR {property.price.toLocaleString()}
+        </p>
+      </div>
+    </div>
+  ))}
+</div>
+
+            
           </div>
 
         </section>

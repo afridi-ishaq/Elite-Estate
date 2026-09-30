@@ -18,6 +18,9 @@ export async function updateProperty(id, formData) {
       bedrooms: Number(formData.get("bedrooms")),
       bathrooms: Number(formData.get("bathrooms")),
 
+      agentId:
+  formData.get("agentId") || null,
+
       images: [
         formData.get("image1"),
         formData.get("image2"),
