@@ -149,7 +149,7 @@ export default function Footer() {
                   href="tel:+923001234567"
                   className="hover:text-white transition-colors"
                 >
-                  +92 300 1234567
+                  +92 304 0944242
                 </a>
               </li>
             </ul>
@@ -201,6 +201,9 @@ export default function Footer() {
             </Link>
             <Link href="/sitemap" className="hover:text-slate-300 transition-colors">
               Sitemap
+            </Link>
+            <Link href="/login" className="hover:text-slate-300 transition-colors">
+              Login
             </Link>
           </div>
 
