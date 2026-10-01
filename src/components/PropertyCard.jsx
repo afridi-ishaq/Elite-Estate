@@ -8,8 +8,8 @@ export default function PropertyCard({ property }) {
   const images = property?.images?.length
     ? property.images
     : property?.image
-    ? [property.image]
-    : ["/placeholder.jpg"];
+      ? [property.image]
+      : ["/placeholder.jpg"];
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -57,7 +57,7 @@ export default function PropertyCard({ property }) {
 
         {/* Image Arrows */}
         {images.length > 1 && (
-          <div className="absolute top-3 right-3 flex gap-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="absolute top-3 right-3 flex gap-1 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
             <button
               onClick={handlePrev}
               className="w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/80"
