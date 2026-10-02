@@ -1,25 +1,35 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { createLead } from "@/lib/lead-service";
+
+const VALID_SOURCES = [
+  "WEBSITE",
+  "FACEBOOK_ADS",
+  "GOOGLE_ADS",
+  "WHATSAPP",
+  "REFERRAL",
+  "MANUAL",
+];
 
 export async function POST(request) {
   try {
     const body = await request.json();
 
-    const lead = await prisma.lead.create({
-      data: {
-        name: body.name,
-        email: body.email,
-        phone: body.phone,
-        message: body.message,
-      },
-    });
+    if (!body.name || !body.email || !body.phone) {
+      return NextResponse.json(
+        { error: "Name, email and phone are required" },
+        { status: 400 }
+      );
+    }
 
-    return NextResponse.json({
-      success: true,
-      lead,
-    });;
+    const source = VALID_SOURCES.includes(body.source)
+      ? body.source
+      : "WEBSITE";
+
+    const lead = await createLead({ ...body, source });
+
+    return NextResponse.json({ success: true, lead });
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     return NextResponse.json(
       { error: "Failed to create lead" },

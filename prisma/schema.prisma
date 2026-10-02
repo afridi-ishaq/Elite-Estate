@@ -59,24 +59,6 @@ model Property {
   updatedAt    DateTime @updatedAt
 }
 
-model Lead {
-  id           String   @id @default(cuid())
-
-  name         String
-  email        String
-  phone        String
-
-  city         String?
-  budget       Float?
-  propertyType String?
-
-  message      String?
-
-  status       LeadStatus @default(NEW)
-
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
 
 model Agent {
   id          String   @id @default(cuid())
@@ -97,4 +79,72 @@ model Agent {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+
+enum LeadSource {
+  WEBSITE
+  FACEBOOK_ADS
+  GOOGLE_ADS
+  WHATSAPP
+  REFERRAL
+  MANUAL
+}
+
+enum ActivityType {
+  CREATED
+  STATUS_CHANGED
+  NOTE_UPDATED
+  AI_ANALYZED
+}
+
+enum LeadTemperature {
+  HOT
+  WARM
+  COLD
+}
+
+model Lead {
+  id           String     @id @default(cuid())
+
+  name         String
+  email        String
+  phone        String
+
+  city         String?
+  budget       Float?
+  propertyType String?
+
+  message      String?
+  notes        String?
+
+  source       LeadSource @default(WEBSITE)
+  status       LeadStatus @default(NEW)
+
+  aiScore          Int?
+  aiTemperature    LeadTemperature?
+  aiSummary        String?
+  aiRecommendation String?
+  aiAnalyzedAt     DateTime?
+
+  activities   LeadActivity[]
+
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model LeadActivity {
+  id        String       @id @default(cuid())
+
+  type      ActivityType
+  fromStatus LeadStatus?
+  toStatus   LeadStatus?
+  note      String?
+
+  leadId    String
+  lead      Lead         @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime     @default(now())
+
+  @@index([leadId, createdAt])
 }
