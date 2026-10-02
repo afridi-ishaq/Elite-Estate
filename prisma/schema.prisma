@@ -96,6 +96,7 @@ enum ActivityType {
   STATUS_CHANGED
   NOTE_UPDATED
   AI_ANALYZED
+  WHATSAPP_ALERT
 }
 
 enum LeadTemperature {
@@ -126,6 +127,7 @@ model Lead {
   aiSummary        String?
   aiRecommendation String?
   aiAnalyzedAt     DateTime?
+  whatsappAlertedAt DateTime?
 
   activities   LeadActivity[]
 
