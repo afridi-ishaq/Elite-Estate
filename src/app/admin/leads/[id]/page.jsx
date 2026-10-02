@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import LeadStatusSelect from "@/components/LeadStatusSelect";
 import LeadNotes from "@/components/LeadNotes";
 import { SOURCE_LABELS, STATUS_LABELS } from "@/lib/lead-constants";
+import AnalyzeButton from "@/components/AnalyzeButton";
 
 function describeActivity(a) {
   if (a.type === "STATUS_CHANGED") {
@@ -15,6 +16,12 @@ function describeActivity(a) {
 export default async function LeadDetailsPage({ params }) {
   const { id } = await params;
   const lead = await getLeadById(id);
+
+  const TEMP_STYLES = {
+    HOT: "bg-red-100 text-red-700",
+    WARM: "bg-amber-100 text-amber-700",
+    COLD: "bg-blue-100 text-blue-700",
+  };
 
   if (!lead) notFound();
 
@@ -66,6 +73,38 @@ export default async function LeadDetailsPage({ params }) {
             >
               Back to Leads
             </a>
+          </div>
+
+          <div className="bg-white rounded-3xl p-8 shadow-md h-fit">
+            <h2 className="text-2xl font-bold mb-4">AI Qualification</h2>
+
+            {lead.aiScore !== null ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${TEMP_STYLES[lead.aiTemperature]}`}>
+                    {lead.aiTemperature} LEAD
+                  </span>
+                  <span className="text-3xl font-bold text-[#0F4C5C]">{lead.aiScore}</span>
+                  <span className="text-gray-400">/ 100</span>
+                </div>
+
+                <div>
+                  <p className="text-sm font-semibold text-gray-500 mb-1">Summary</p>
+                  <p className="text-sm">{lead.aiSummary}</p>
+                </div>
+
+                <div>
+                  <p className="text-sm font-semibold text-gray-500 mb-1">Recommendation</p>
+                  <p className="text-sm bg-[#D9C7A7]/30 p-3 rounded-xl">{lead.aiRecommendation}</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 mb-4">Not analyzed yet.</p>
+            )}
+
+            <div className="mt-5">
+              <AnalyzeButton leadId={lead.id} hasAnalysis={lead.aiScore !== null} />
+            </div>
           </div>
 
           {/* Right: timeline */}

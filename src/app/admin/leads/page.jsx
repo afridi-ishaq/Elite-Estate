@@ -31,6 +31,7 @@ export default async function AdminLeadsPage() {
                 <th className="p-4 text-left"> Email </th>
                 <th className="p-4 text-left"> Phone </th>
                 <th className="p-4 text-left"> Source </th>
+                <th className="p-4 text-left"> AI Score </th>
                 <th className="p-4 text-left"> Status </th>
                 <th className="p-4 text-left"> Actions </th>
               </tr>
@@ -45,6 +46,22 @@ export default async function AdminLeadsPage() {
                     <span className="bg-[#D9C7A7]/40 text-[#0F4C5C] px-3 py-1 rounded-full text-sm">
                       {SOURCE_LABELS[lead.source]}
                     </span>
+                  </td>
+                  <td className="p-4">
+                    {lead.aiScore !== null ? (
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-semibold ${lead.aiTemperature === "HOT"
+                            ? "bg-red-100 text-red-700"
+                            : lead.aiTemperature === "WARM"
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-blue-100 text-blue-700"
+                          }`}
+                      >
+                        {lead.aiTemperature} · {lead.aiScore}
+                      </span>
+                    ) : (
+                      <span className="text-gray-400 text-sm">-</span>
+                    )}
                   </td>
                   <td className="p-4">
                     <span className=" bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm " >

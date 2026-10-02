@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { scoreLead } from "@/lib/ai-service";
 
 export async function getLeads() {
   return await prisma.lead.findMany({
@@ -70,6 +71,35 @@ export async function updateLeadNotes(id, notes) {
         leadId: id,
         type: "NOTE_UPDATED",
         note: "Notes updated",
+      },
+    }),
+  ]);
+
+  return updated;
+}
+
+export async function analyzeLead(id) {
+  const lead = await prisma.lead.findUnique({ where: { id } });
+  if (!lead) throw new Error("Lead not found");
+
+  const result = await scoreLead(lead);
+
+  const [updated] = await prisma.$transaction([
+    prisma.lead.update({
+      where: { id },
+      data: {
+        aiScore: result.score,
+        aiTemperature: result.temperature,
+        aiSummary: result.summary,
+        aiRecommendation: result.recommendation,
+        aiAnalyzedAt: new Date(),
+      },
+    }),
+    prisma.leadActivity.create({
+      data: {
+        leadId: id,
+        type: "AI_ANALYZED",
+        note: `AI analysis: ${result.temperature} lead (score ${result.score})`,
       },
     }),
   ]);

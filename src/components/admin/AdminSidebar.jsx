@@ -7,6 +7,7 @@ import {
   HiOutlineOfficeBuilding,
   HiOutlineUserGroup,
   HiOutlineUsers,
+  HiOutlineCog,
 } from "react-icons/hi";
 import { ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 
@@ -78,6 +79,17 @@ export default function AdminSidebar() {
               >
                 <HiOutlineUsers size={22} className="shrink-0" />
                 {!isCollapsed && <span className="truncate">Agents</span>}
+              </Link>
+
+                            <Link
+                href="/admin/settings"
+                title="Settings"
+                className={`flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 ${
+                  isCollapsed ? "justify-center" : ""
+                }`}
+              >
+                <HiOutlineCog size={22} className="shrink-0" />
+                {!isCollapsed && <span className="truncate">Settings</span>}
               </Link>
             </nav>
           </div>

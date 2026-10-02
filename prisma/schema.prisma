@@ -148,3 +148,21 @@ model LeadActivity {
 
   @@index([leadId, createdAt])
 }
+
+
+model Settings {
+  id String @id @default(cuid())
+
+  companyName    String?
+  companyEmail   String?
+  companyPhone   String?
+  companyAddress String?
+
+  geminiApiKey String?
+
+  whatsappNumber  String?
+  whatsappPhoneId String?
+  whatsappToken   String?
+
+  updatedAt DateTime @updatedAt
+}

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { createLead } from "@/lib/lead-service";
+import { after } from "next/server";
+import { createLead, analyzeLead } from "@/lib/lead-service";
 
 const VALID_SOURCES = [
   "WEBSITE",
@@ -26,6 +27,14 @@ export async function POST(request) {
       : "WEBSITE";
 
     const lead = await createLead({ ...body, source });
+
+    after(async () => {
+      try {
+        await analyzeLead(lead.id);
+      } catch (err) {
+        console.error("AI analysis failed:", err.message);
+      }
+    });
 
     return NextResponse.json({ success: true, lead });
   } catch (error) {
