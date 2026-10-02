@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { scoreLead } from "@/lib/ai-service";
+import { sendHotLeadAlert } from "@/lib/whatsapp-service";
 
 export async function getLeads() {
   return await prisma.lead.findMany({
@@ -103,6 +104,29 @@ export async function analyzeLead(id) {
       },
     }),
   ]);
+
+  // WhatsApp alert for HOT leads, once per lead.
+  // A failure here must never break the analysis itself.
+  if (updated.aiTemperature === "HOT" && !updated.whatsappAlertedAt) {
+    try {
+      await sendHotLeadAlert(updated);
+      await prisma.$transaction([
+        prisma.lead.update({
+          where: { id },
+          data: { whatsappAlertedAt: new Date() },
+        }),
+        prisma.leadActivity.create({
+          data: {
+            leadId: id,
+            type: "WHATSAPP_ALERT",
+            note: "HOT lead alert sent via WhatsApp",
+          },
+        }),
+      ]);
+    } catch (err) {
+      console.error("WhatsApp alert failed:", err.message);
+    }
+  }
 
   return updated;
 }

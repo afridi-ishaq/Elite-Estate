@@ -2,11 +2,23 @@
 
 import { revalidatePath } from "next/cache";
 import { saveSettings } from "@/lib/settings-service";
+import { sendTestMessage } from "@/lib/whatsapp-service";
+
 
 const clean = (v) => {
   const s = String(v ?? "").trim();
   return s === "" ? null : s;
 };
+
+export async function testWhatsApp() {
+  try {
+    await sendTestMessage();
+    return { success: true, message: "Test message sent. Check your WhatsApp." };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: error.message };
+  }
+}
 
 export async function updateSettings(prevState, formData) {
   try {

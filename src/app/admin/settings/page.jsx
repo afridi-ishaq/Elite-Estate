@@ -1,5 +1,6 @@
 import Container from "@/components/Container";
 import SettingsForm from "@/components/SettingsForm";
+import WhatsAppTestButton from "@/components/WhatsAppTestButton";
 import { getSettings } from "@/lib/settings-service";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +28,7 @@ export default async function SettingsPage() {
         <div className="max-w-2xl bg-white rounded-3xl p-8 shadow-md">
           <h1 className="text-4xl font-bold mb-8">Settings</h1>
           <SettingsForm settings={settings} secrets={secrets} />
+          <WhatsAppTestButton />
         </div>
       </Container>
     </main>
