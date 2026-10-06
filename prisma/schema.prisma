@@ -129,6 +129,8 @@ model Lead {
   aiAnalyzedAt     DateTime?
   whatsappAlertedAt DateTime?
 
+  facebookLeadId String? @unique
+
   activities   LeadActivity[]
 
   createdAt    DateTime   @default(now())

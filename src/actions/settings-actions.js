@@ -1,27 +1,19 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/admin-guard";
 import { saveSettings } from "@/lib/settings-service";
 import { sendTestMessage } from "@/lib/whatsapp-service";
-
 
 const clean = (v) => {
   const s = String(v ?? "").trim();
   return s === "" ? null : s;
 };
 
-export async function testWhatsApp() {
-  try {
-    await sendTestMessage();
-    return { success: true, message: "Test message sent. Check your WhatsApp." };
-  } catch (error) {
-    console.error(error);
-    return { success: false, message: error.message };
-  }
-}
-
 export async function updateSettings(prevState, formData) {
   try {
+    await requireAdmin();
+
     const data = {
       companyName: clean(formData.get("companyName")),
       companyEmail: clean(formData.get("companyEmail")),
@@ -31,7 +23,6 @@ export async function updateSettings(prevState, formData) {
       whatsappPhoneId: clean(formData.get("whatsappPhoneId")),
     };
 
-    // Secrets: only overwrite when a new value is typed
     const geminiApiKey = clean(formData.get("geminiApiKey"));
     const whatsappToken = clean(formData.get("whatsappToken"));
     if (geminiApiKey) data.geminiApiKey = geminiApiKey;
@@ -44,5 +35,16 @@ export async function updateSettings(prevState, formData) {
   } catch (error) {
     console.error(error);
     return { success: false, message: "Could not save settings." };
+  }
+}
+
+export async function testWhatsApp() {
+  try {
+    await requireAdmin();
+    await sendTestMessage();
+    return { success: true, message: "Test message sent. Check your WhatsApp." };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: error.message };
   }
 }

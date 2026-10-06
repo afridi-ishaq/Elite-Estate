@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { getAdminSession } from "@/lib/admin-guard";
 import { updateLeadStatus, updateLeadNotes } from "@/lib/lead-service";
 
 const VALID_STATUSES = [
@@ -11,6 +12,10 @@ const VALID_STATUSES = [
 ];
 
 export async function PATCH(request, { params }) {
+  if (!(await getAdminSession())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const body = await request.json();
@@ -19,23 +24,17 @@ export async function PATCH(request, { params }) {
 
     if (body.status !== undefined) {
       if (!VALID_STATUSES.includes(body.status)) {
-        return NextResponse.json(
-          { error: "Invalid status" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "Invalid status" }, { status: 400 });
       }
       lead = await updateLeadStatus(id, body.status);
     }
 
     if (body.notes !== undefined) {
-      lead = await updateLeadNotes(id, body.notes);
+      lead = await updateLeadNotes(id, String(body.notes).slice(0, 5000));
     }
 
     if (!lead) {
-      return NextResponse.json(
-        { error: "Nothing to update" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Nothing to update" }, { status: 400 });
     }
 
     revalidatePath("/admin/leads");

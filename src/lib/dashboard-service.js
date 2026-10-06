@@ -1,98 +1,103 @@
 "use server";
+
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/admin-guard";
+import { SOURCE_LABELS } from "@/lib/lead-constants";
 
 export async function getDashboardStats() {
-  const totalProperties = await prisma.property.count();
+  await requireAdmin();
 
-  const totalLeads = await prisma.lead.count();
+  const [totalProperties, totalLeads, totalAgents, newLeads, hotLeads, closedLeads] =
+    await Promise.all([
+      prisma.property.count(),
+      prisma.lead.count(),
+      prisma.agent.count(),
+      prisma.lead.count({ where: { status: "NEW" } }),
+      prisma.lead.count({ where: { aiTemperature: "HOT" } }),
+      prisma.lead.count({ where: { status: "CLOSED" } }),
+    ]);
 
-  const totalAgents = await prisma.user.count({
-    where: {
-      role: "AGENT",
-    },
-  });
-
-  const newLeads = await prisma.lead.count({
-    where: {
-      status: "NEW",
-    },
-  });
+  const conversionRate = totalLeads
+    ? Math.round((closedLeads / totalLeads) * 1000) / 10
+    : 0;
 
   return {
     totalProperties,
     totalLeads,
     totalAgents,
     newLeads,
+    hotLeads,
+    closedLeads,
+    conversionRate,
   };
 }
 
 export async function getLeadStatusData() {
-  const leads =
-    await prisma.lead.findMany();
+  await requireAdmin();
 
-  const statuses = [
-    "NEW",
-    "CONTACTED",
-    "INTERESTED",
-    "VISIT_SCHEDULED",
-    "CLOSED",
-  ];
+  const rows = await prisma.lead.groupBy({
+    by: ["status"],
+    _count: { _all: true },
+  });
+
+  const statuses = ["NEW", "CONTACTED", "INTERESTED", "VISIT_SCHEDULED", "CLOSED"];
 
   return statuses.map((status) => ({
     name: status,
-    value: leads.filter(
-      (lead) =>
-        lead.status === status
-    ).length,
+    value: rows.find((r) => r.status === status)?._count._all || 0,
+  }));
+}
+
+export async function getLeadSourceData() {
+  await requireAdmin();
+
+  const rows = await prisma.lead.groupBy({
+    by: ["source"],
+    _count: { _all: true },
+  });
+
+  return Object.keys(SOURCE_LABELS).map((source) => ({
+    name: SOURCE_LABELS[source],
+    value: rows.find((r) => r.source === source)?._count._all || 0,
   }));
 }
 
 export async function getRecentLeads() {
+  await requireAdmin();
+
   return await prisma.lead.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: { createdAt: "desc" },
     take: 5,
   });
 }
 
 export async function getRecentProperties() {
+  await requireAdmin();
+
   return await prisma.property.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: { createdAt: "desc" },
     take: 5,
   });
 }
 
 export async function getPropertiesByCity() {
-  const properties =
-    await prisma.property.findMany();
+  await requireAdmin();
 
-  const grouped = {};
-
-  properties.forEach((property) => {
-    grouped[property.city] =
-      (grouped[property.city] || 0) + 1;
+  const rows = await prisma.property.groupBy({
+    by: ["city"],
+    _count: { _all: true },
   });
 
-  return Object.entries(grouped).map(
-    ([city, count]) => ({
-      city,
-      count,
-    })
-  );
+  return rows.map((r) => ({ city: r.city, count: r._count._all }));
 }
 
-
-
-
 export async function getLeadsOverTime(range = "3M") {
+  await requireAdmin();
+
   try {
     const now = new Date();
-    let startDate = new Date();
+    const startDate = new Date();
 
-    // 1. Calculate Start Date filter
     switch (range) {
       case "7D":
         startDate.setDate(now.getDate() - 7);
@@ -110,24 +115,14 @@ export async function getLeadsOverTime(range = "3M") {
         startDate.setMonth(now.getMonth() - 3);
     }
 
-    // 2. Fetch leads from database within date range
     const leads = await prisma.lead.findMany({
-      where: {
-        createdAt: {
-          gte: startDate,
-        },
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-      select: {
-        createdAt: true,
-      },
+      where: { createdAt: { gte: startDate } },
+      orderBy: { createdAt: "asc" },
+      select: { createdAt: true },
     });
 
     if (!leads.length) return [];
 
-    // 3. Format dynamic label (Days for 7D/30D, Months for 3M/1Y)
     const isShortRange = range === "7D" || range === "30D";
 
     const counts = leads.reduce((acc, lead) => {

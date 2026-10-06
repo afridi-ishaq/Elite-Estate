@@ -28,6 +28,7 @@ export async function createLead(data) {
       budget: data.budget ? Number(data.budget) : null,
       propertyType: data.propertyType || null,
       source: data.source || "WEBSITE",
+      facebookLeadId: data.facebookLeadId || null,
       activities: {
         create: {
           type: "CREATED",

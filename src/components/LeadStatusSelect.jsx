@@ -1,61 +1,56 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function LeadStatusSelect({
-  leadId,
-  currentStatus,
-}) {
-  const [status, setStatus] =
-    useState(currentStatus);
+const OPTIONS = [
+  ["NEW", "NEW"],
+  ["CONTACTED", "CONTACTED"],
+  ["INTERESTED", "INTERESTED"],
+  ["VISIT_SCHEDULED", "VISIT SCHEDULED"],
+  ["CLOSED", "CLOSED"],
+];
+
+export default function LeadStatusSelect({ leadId, currentStatus }) {
+  const router = useRouter();
+  const [status, setStatus] = useState(currentStatus);
+  const [saving, setSaving] = useState(false);
 
   async function updateStatus(newStatus) {
+    const previous = status;
     setStatus(newStatus);
+    setSaving(true);
 
-    await fetch(`/api/leads/${leadId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type":
-          "application/json",
-      },
-      body: JSON.stringify({
-        status: newStatus,
-      }),
-    });
+    try {
+      const res = await fetch(`/api/leads/${leadId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!res.ok) throw new Error("Failed");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      setStatus(previous);
+      alert("Could not update status.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
     <select
       value={status}
-      onChange={(e) =>
-        updateStatus(e.target.value)
-      }
-      className="
-        border
-        rounded-xl
-        px-4
-        py-2
-      "
+      disabled={saving}
+      onChange={(e) => updateStatus(e.target.value)}
+      className="border rounded-xl px-4 py-2 disabled:opacity-60"
     >
-      <option value="NEW">
-        NEW
-      </option>
-
-      <option value="CONTACTED">
-        CONTACTED
-      </option>
-
-      <option value="INTERESTED">
-        INTERESTED
-      </option>
-
-      <option value="VISIT_SCHEDULED">
-        VISIT SCHEDULED
-      </option>
-
-      <option value="CLOSED">
-        CLOSED
-      </option>
+      {OPTIONS.map(([value, label]) => (
+        <option key={value} value={value}>
+          {label}
+        </option>
+      ))}
     </select>
   );
 }
