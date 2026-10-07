@@ -8,14 +8,12 @@ export const maxDuration = 60;
 
 const API_VERSION = process.env.FACEBOOK_API_VERSION || "v21.0";
 
-// 1. GET: Verification Handshake with Meta
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const EXPECTED_TOKEN = process.env.FACEBOOK_VERIFY_TOKEN || "elite_estates_verify_2026";
 
   if (
     searchParams.get("hub.mode") === "subscribe" &&
-    searchParams.get("hub.verify_token") === EXPECTED_TOKEN
+    searchParams.get("hub.verify_token") === process.env.FACEBOOK_VERIFY_TOKEN
   ) {
     return new Response(searchParams.get("hub.challenge"), { status: 200 });
   }
@@ -23,7 +21,6 @@ export async function GET(request) {
   return new Response("Forbidden", { status: 403 });
 }
 
-// Helper: Secure HMAC SHA256 Signature Verification
 function validSignature(rawBody, header) {
   const secret = process.env.FACEBOOK_APP_SECRET;
   if (!secret || !header) return false;
@@ -32,22 +29,21 @@ function validSignature(rawBody, header) {
     "sha256=" +
     crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
 
-  const expectedBuffer = Buffer.from(expected, "utf8");
-  const headerBuffer = Buffer.from(header, "utf8");
-
-  if (expectedBuffer.length !== headerBuffer.length) {
-    return false;
-  }
-
-  return crypto.timingSafeEqual(expectedBuffer, headerBuffer);
+  const a = Buffer.from(expected);
+  const b = Buffer.from(header);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
-// Process Incoming Meta Lead Data
 async function processLeadgen(leadgenId) {
+  console.log("[FB] 1. Received leadgen id:", leadgenId);
+
   const exists = await prisma.lead.findUnique({
     where: { facebookLeadId: leadgenId },
   });
-  if (exists) return;
+  if (exists) {
+    console.log("[FB] Already saved, skipping:", leadgenId);
+    return;
+  }
 
   const res = await fetch(
     `https://graph.facebook.com/${API_VERSION}/${leadgenId}?access_token=${process.env.FACEBOOK_PAGE_TOKEN}`
@@ -57,6 +53,9 @@ async function processLeadgen(leadgenId) {
   }
 
   const data = await res.json();
+  console.log("[FB] 2. Lead fetched from Facebook. Fields:",
+    (data.field_data || []).map((f) => f.name).join(", "));
+
   const fields = {};
   for (const f of data.field_data || []) {
     fields[f.name] = (f.values || [])[0] || "";
@@ -88,24 +87,26 @@ async function processLeadgen(leadgenId) {
     source: "FACEBOOK_ADS",
     facebookLeadId: leadgenId,
   });
+  console.log("[FB] 3. Lead saved in database. id:", lead.id);
 
   try {
     await analyzeLead(lead.id);
+    console.log("[FB] 4. AI analysis done");
   } catch (err) {
-    console.error("AI analysis failed:", err.message);
+    console.error("[FB] AI analysis failed:", err.message);
   }
 }
 
-// 2. POST: Handle Incoming Webhook Events
 export async function POST(request) {
   const rawBody = await request.text();
 
-  // Signature check (Disabled temporarily during initial local test if process.env.FACEBOOK_APP_SECRET is unset)
-  if (process.env.FACEBOOK_APP_SECRET && !validSignature(rawBody, request.headers.get("x-hub-signature-256"))) {
+  if (!validSignature(rawBody, request.headers.get("x-hub-signature-256"))) {
+    console.error("[FB] Invalid signature. Check FACEBOOK_APP_SECRET.");
     return new Response("Invalid signature", { status: 401 });
   }
 
   const body = JSON.parse(rawBody);
+  console.log("[FB] Webhook POST received and signature OK");
 
   after(async () => {
     for (const entry of body.entry || []) {
@@ -114,7 +115,7 @@ export async function POST(request) {
           try {
             await processLeadgen(String(change.value.leadgen_id));
           } catch (err) {
-            console.error("Facebook lead failed:", err.message);
+            console.error("[FB] Lead failed:", err.message);
           }
         }
       }
