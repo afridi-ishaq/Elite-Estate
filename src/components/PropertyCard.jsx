@@ -1,122 +1,183 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Bed, Bath, Square, MapPin, ArrowUpRight } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  ChevronLeft,
+  ChevronRight,
+  BedDouble,
+  Bath,
+  Ruler,
+  MapPin,
+  ArrowUpRight,
+  Star,
+} from "lucide-react";
+
+const FALLBACK_IMAGE = "/images/realestate.jpg";
+
+function formatPrice(value) {
+  const price = Number(value);
+  if (!Number.isFinite(price) || price <= 0) return "Price on request";
+
+  const trim = (n) => n.toFixed(2).replace(/\.?0+$/, "");
+
+  if (price >= 1e7) return `PKR ${trim(price / 1e7)} Crore`;
+  if (price >= 1e5) return `PKR ${trim(price / 1e5)} Lakh`;
+  return `PKR ${price.toLocaleString("en-PK")}`;
+}
+
+function getGallery(property) {
+  const fromArray = Array.isArray(property?.images)
+    ? property.images.filter((src) => typeof src === "string" && src.trim())
+    : [];
+
+  if (fromArray.length) return fromArray;
+  if (typeof property?.image === "string" && property.image.trim()) {
+    return [property.image];
+  }
+  return [FALLBACK_IMAGE];
+}
 
 export default function PropertyCard({ property }) {
-  const images = property?.images?.length
-    ? property.images
-    : property?.image
-      ? [property.image]
-      : ["/placeholder.jpg"];
+  const [index, setIndex] = useState(0);
+  const [failed, setFailed] = useState({});
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  if (!property) return null;
 
-  const handleNext = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setCurrentIndex((prev) => (prev + 1) % images.length);
+  const gallery = getGallery(property);
+  const total = gallery.length;
+  const safeIndex = index < total ? index : 0; // guards against gallery shrinking
+  const src = failed[safeIndex] ? FALLBACK_IMAGE : gallery[safeIndex];
+  const href = `/properties/${property.id}`;
+
+  const step = (direction) => (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIndex((current) => (current + direction + total) % total);
   };
 
-  const handlePrev = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
-  const formatPrice = (price) => {
-    if (!price) return "Price on Request";
-    if (price >= 10000000) return `PKR ${(price / 10000000).toFixed(2)} Cr`;
-    if (price >= 100000) return `PKR ${(price / 100000).toFixed(2)} Lakh`;
-    return `PKR ${price.toLocaleString()}`;
-  };
+  const hasBeds = property.bedrooms != null && property.bedrooms !== "";
+  const hasBaths = property.bathrooms != null && property.bathrooms !== "";
+  const hasArea = property.area != null && property.area !== "";
+  const hasSpecs = hasBeds || hasBaths || hasArea;
 
   return (
-    <div className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-      {/* 1. Image Container (Fixed Height) */}
-      <div className="relative w-full h-52 bg-gray-100 overflow-hidden">
-        <img
-          src={images[currentIndex]}
-          alt={property?.title || "Property"}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-[#E8E5DD] bg-white shadow-sm transition-shadow duration-300 hover:shadow-[0_18px_40px_rgba(15,76,92,0.14)] motion-reduce:transition-none">
+      {/* Image */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-[#F1F0EC]">
+        <Image
+          src={src}
+          alt={property.title || "Property photo"}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          unoptimized
+          onError={() => setFailed((prev) => ({ ...prev, [safeIndex]: true }))}
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
         />
 
-        {/* Dynamic Badge */}
-        <div className="absolute top-3 left-3 z-10">
-          {property?.featured ? (
-            <span className="bg-[#0F4C5C] text-amber-300 text-[10px] font-bold tracking-wider px-2.5 py-1 rounded-md uppercase shadow-md">
-              FEATURED
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#071E24]/70 via-transparent to-transparent" />
+
+        {/* Badge */}
+        <div className="pointer-events-none absolute left-3 top-3">
+          {property.featured ? (
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#0F4C5C] px-2.5 py-1 text-xs font-semibold text-[#F0D590] shadow">
+              <Star size={12} fill="currentColor" />
+              Featured
             </span>
           ) : (
-            <span className="bg-black/60 backdrop-blur-md text-white text-xs px-2.5 py-1 rounded-md capitalize">
-              {property?.propertyType || "House"}
+            <span className="rounded-full bg-black/45 px-2.5 py-1 text-xs font-medium capitalize text-white backdrop-blur-sm">
+              {property.propertyType || "Property"}
             </span>
           )}
         </div>
 
-        {/* Image Arrows */}
-        {images.length > 1 && (
-          <div className="absolute top-3 right-3 flex gap-1 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
+        {/* Gallery controls (sit above the card link) */}
+        {total > 1 && (
+          <>
             <button
-              onClick={handlePrev}
-              className="w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/80"
+              type="button"
+              onClick={step(-1)}
+              aria-label="Previous photo"
+              className="absolute left-2.5 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-[#0F4C5C] shadow transition hover:bg-white focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C] sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft size={18} />
             </button>
             <button
-              onClick={handleNext}
-              className="w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/80"
+              type="button"
+              onClick={step(1)}
+              aria-label="Next photo"
+              className="absolute right-2.5 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-[#0F4C5C] shadow transition hover:bg-white focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C] sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight size={18} />
             </button>
-          </div>
+            <span
+              className="pointer-events-none absolute right-3 top-3 rounded-full bg-black/45 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm"
+              aria-live="polite"
+            >
+              {safeIndex + 1}/{total}
+            </span>
+          </>
         )}
 
-        {/* Price Tag Overlay on Image */}
-        <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-lg text-white font-bold text-sm">
-          {formatPrice(property?.price)}
-        </div>
+        {/* Price */}
+        <p className="pointer-events-none absolute bottom-3 left-4 right-4 text-xl font-bold tracking-tight text-white drop-shadow sm:text-2xl">
+          {formatPrice(property.price)}
+        </p>
       </div>
 
-      {/* 2. Content Details Section */}
-      <div className="p-4 flex flex-col justify-between flex-1">
-        <div>
-          <h3 className="font-bold text-gray-900 text-base line-clamp-1 group-hover:text-[#0F4C5C] transition-colors">
-            {property?.title || "Untitled Property"}
-          </h3>
-          <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-            <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-            <span className="truncate">{property?.city || "Location N/A"}</span>
-          </p>
-        </div>
+      {/* Details */}
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
+        <h3 className="line-clamp-1 text-lg font-semibold tracking-tight text-[#172F34]">
+          {/* Stretched link: the whole card is clickable, but there is only one link for screen readers */}
+          <Link
+            href={href}
+            className="outline-none after:absolute after:inset-0 after:z-10 after:content-[''] focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-[#0F4C5C]"
+          >
+            {property.title || "Untitled property"}
+          </Link>
+        </h3>
 
-        {/* Key Specs */}
-        <div className="grid grid-cols-3 gap-2 py-3 my-3 border-y border-gray-100 text-xs text-gray-600 font-medium">
-          <div className="flex items-center gap-1.5">
-            <Bed className="w-4 h-4 text-[#0F4C5C]" />
-            <span>{property?.bedrooms || 0} Beds</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Bath className="w-4 h-4 text-[#0F4C5C]" />
-            <span>{property?.bathrooms || 0} Baths</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Square className="w-4 h-4 text-[#0F4C5C]" />
-            <span>{property?.area || "—"} Sq Yd</span>
-          </div>
-        </div>
+        <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500">
+          <MapPin size={14} className="shrink-0 text-[#C89B3C]" />
+          <span className="truncate">
+            {property.city || "Location on request"}
+          </span>
+        </p>
 
-        {/* View Action Button */}
-        <Link
-          href={`/properties/${property?.id || "#"}`}
-          className="w-full bg-gray-50 hover:bg-[#0F4C5C] text-gray-800 hover:text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all duration-200"
-          style={{ hover: { backgroundColor: "#0F4C5C", color: "#fff" } }}
+        {hasSpecs && (
+          <ul className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-[#EEECE6] pt-4 text-sm text-slate-600">
+            {hasBeds && (
+              <li className="flex items-center gap-1.5">
+                <BedDouble size={16} className="text-[#0F4C5C]" />
+                {property.bedrooms} {Number(property.bedrooms) === 1 ? "bed" : "beds"}
+              </li>
+            )}
+            {hasBaths && (
+              <li className="flex items-center gap-1.5">
+                <Bath size={16} className="text-[#0F4C5C]" />
+                {property.bathrooms} {Number(property.bathrooms) === 1 ? "bath" : "baths"}
+              </li>
+            )}
+            {hasArea && (
+              <li className="flex items-center gap-1.5">
+                <Ruler size={16} className="text-[#0F4C5C]" />
+                {property.area} {property.areaUnit || "sq yd"}
+              </li>
+            )}
+          </ul>
+        )}
+
+        {/* Visual button only; the title link handles the click */}
+        <span
+          aria-hidden="true"
+          className="mt-auto flex items-center justify-center gap-1.5 rounded-xl bg-[#F7F6F2] px-4 py-2.5 text-sm font-semibold text-[#0F4C5C] transition-colors duration-200 group-hover:bg-[#0F4C5C] group-hover:text-white motion-reduce:transition-none"
+          style={{ marginTop: hasSpecs ? "1rem" : "auto" }}
         >
-          <span>View Details</span>
-          <ArrowUpRight className="w-4 h-4" />
-        </Link>
+          View details
+          <ArrowUpRight size={16} />
+        </span>
       </div>
-    </div>
+    </article>
   );
 }
