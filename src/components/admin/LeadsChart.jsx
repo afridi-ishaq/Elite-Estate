@@ -85,7 +85,7 @@ export default function LeadsChart({ initialData = [] }) {
   }
 
   return (
-    <div className="w-full flex flex-col justify-between h-full space-y-5 relative">
+    <div className="w-full flex flex-col justify-between h-full pb-15 space-y-5 relative">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-100">
         <div className="flex items-baseline gap-3">
