@@ -86,7 +86,7 @@ export default function EditAgentForm({ agent }) {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
+    <main className="min-h-screen bg-gray-50 p-22">
       <div className="max-w-4xl mx-auto">
 
         {/* Header */}
