@@ -71,7 +71,7 @@ async function callGemini(apiKey, body) {
   let lastError;
 
   for (const model of models) {
-    for (let attempt = 0; attempt < 2; attempt++) {
+    for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const res = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
@@ -82,7 +82,7 @@ async function callGemini(apiKey, body) {
               "x-goog-api-key": apiKey,
             },
             body: JSON.stringify(body),
-            signal: AbortSignal.timeout(25000),
+            signal: AbortSignal.timeout(40000),
           }
         );
 
@@ -90,14 +90,18 @@ async function callGemini(apiKey, body) {
 
         const text = await res.text();
         lastError = new Error(`Gemini error ${res.status} (${model}): ${text}`);
+
+        // 400, 403 and 404 will not get better by retrying
         if (!RETRYABLE.includes(res.status)) throw lastError;
       } catch (err) {
         lastError = err;
-        if (err.message?.startsWith("Gemini error") && !RETRYABLE.some((c) => err.message.includes(` ${c} `))) {
+        if (err.fatal) throw err;
+        if (/Gemini error (400|403|404)/.test(err.message)) {
+          err.fatal = true;
           throw err;
         }
       }
-      await sleep(800 * (attempt + 1));
+      await sleep(1000 * (attempt + 1));
     }
   }
 
