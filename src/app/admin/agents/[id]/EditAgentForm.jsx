@@ -4,18 +4,21 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+const inputClass =
+  "w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#0F4C5C]";
+
 export default function EditAgentForm({ agent }) {
   const router = useRouter();
 
   const [form, setForm] = useState({
-    name: agent.name || "",
-    email: agent.email || "",
-    phone: agent.phone || "",
-    title: agent.title || "",
-    bio: agent.bio || "",
-    image: agent.image || "",
-    experience: agent.experience || "",
-    listings: agent.listings || "",
+    name: agent.name ?? "",
+    email: agent.email ?? "",
+    phone: agent.phone ?? "",
+    title: agent.title ?? "",
+    bio: agent.bio ?? "",
+    image: agent.image ?? "",
+    experience: agent.experience ?? "",
+    listings: agent.listings ?? "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -29,15 +32,12 @@ export default function EditAgentForm({ agent }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
     setLoading(true);
 
     try {
       const response = await fetch(`/api/agents/${agent.id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
 
@@ -59,10 +59,7 @@ export default function EditAgentForm({ agent }) {
   }
 
   async function handleDelete() {
-    const confirmed = confirm(
-      "Are you sure you want to delete this agent?"
-    );
-
+    const confirmed = confirm("Are you sure you want to delete this agent?");
     if (!confirmed) return;
 
     try {
@@ -86,12 +83,11 @@ export default function EditAgentForm({ agent }) {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-22">
-      <div className="max-w-4xl mx-auto">
-
+    <main className="min-h-screen bg-gray-50 px-4 pb-24 pt-20 sm:px-6 md:p-12 lg:p-20">
+      <div className="mx-auto max-w-4xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between md:mb-8">
+          <div className="min-w-0">
             <Link
               href="/admin/agents"
               className="text-sm text-gray-500 hover:text-gray-900"
@@ -99,19 +95,17 @@ export default function EditAgentForm({ agent }) {
               ← Back to Agents
             </Link>
 
-            <h1 className="text-3xl font-bold text-gray-900 mt-3">
+            <h1 className="mt-3 text-2xl font-bold text-gray-900 md:text-3xl">
               Edit Agent
             </h1>
 
-            <p className="text-gray-500 mt-1">
-              Update agent information.
-            </p>
+            <p className="mt-1 text-gray-500">Update agent information.</p>
           </div>
 
           <button
             type="button"
             onClick={handleDelete}
-            className="px-5 py-2.5 rounded-xl bg-red-50 text-red-600 hover:bg-red-100"
+            className="self-start rounded-xl bg-red-50 px-5 py-2.5 text-red-600 hover:bg-red-100"
           >
             Delete Agent
           </button>
@@ -120,138 +114,112 @@ export default function EditAgentForm({ agent }) {
         {/* Form */}
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-2xl border border-gray-200 p-6 space-y-6"
+          className="space-y-6 rounded-2xl border border-gray-200 bg-white p-4 sm:p-6"
         >
-          <div className="grid md:grid-cols-2 gap-5">
-
-            {/* Name */}
+          <div className="grid gap-5 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Full Name
-              </label>
-
+              <label className="mb-2 block text-sm font-medium">Full Name</label>
               <input
                 name="name"
                 value={form.name}
                 onChange={handleChange}
                 required
-                className="w-full border rounded-xl px-4 py-3"
+                className={inputClass}
               />
             </div>
 
-            {/* Email */}
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Email
-              </label>
-
+              <label className="mb-2 block text-sm font-medium">Email</label>
               <input
                 name="email"
                 type="email"
                 value={form.email}
                 onChange={handleChange}
                 required
-                className="w-full border rounded-xl px-4 py-3"
+                className={inputClass}
               />
             </div>
 
-            {/* Phone */}
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Phone
-              </label>
-
+              <label className="mb-2 block text-sm font-medium">Phone</label>
               <input
                 name="phone"
+                type="tel"
                 value={form.phone}
                 onChange={handleChange}
-                className="w-full border rounded-xl px-4 py-3"
+                className={inputClass}
               />
             </div>
 
-            {/* Title */}
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Job Title
-              </label>
-
+              <label className="mb-2 block text-sm font-medium">Job Title</label>
               <input
                 name="title"
                 value={form.title}
                 onChange={handleChange}
                 placeholder="Senior Property Consultant"
-                className="w-full border rounded-xl px-4 py-3"
+                className={inputClass}
               />
             </div>
 
-            {/* Experience */}
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="mb-2 block text-sm font-medium">
                 Experience (Years)
               </label>
-
               <input
                 name="experience"
                 type="number"
                 min="0"
+                inputMode="numeric"
                 value={form.experience}
                 onChange={handleChange}
-                className="w-full border rounded-xl px-4 py-3"
+                className={inputClass}
               />
             </div>
 
-            {/* Listings */}
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Listings
-              </label>
-
+              <label className="mb-2 block text-sm font-medium">Listings</label>
               <input
                 name="listings"
                 type="number"
                 min="0"
+                inputMode="numeric"
                 value={form.listings}
                 onChange={handleChange}
-                className="w-full border rounded-xl px-4 py-3"
+                className={inputClass}
               />
             </div>
 
-            {/* Image */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-2">
+              <label className="mb-2 block text-sm font-medium">
                 Profile Image URL
               </label>
-
               <input
                 name="image"
                 value={form.image}
                 onChange={handleChange}
                 placeholder="https://..."
-                className="w-full border rounded-xl px-4 py-3"
+                className={inputClass}
               />
             </div>
 
-            {/* Bio */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-2">
-                Bio
-              </label>
-
+              <label className="mb-2 block text-sm font-medium">Bio</label>
               <textarea
                 name="bio"
                 value={form.bio}
                 onChange={handleChange}
                 rows={5}
-                className="w-full border rounded-xl px-4 py-3 resize-none"
+                className={`${inputClass} resize-none`}
               />
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <div className="flex flex-col-reverse gap-3 border-t pt-4 sm:flex-row sm:justify-end">
             <Link
               href="/admin/agents"
-              className="px-5 py-3 rounded-xl border hover:bg-gray-50"
+              className="rounded-xl border px-5 py-3 text-center hover:bg-gray-50"
             >
               Cancel
             </Link>
@@ -259,7 +227,7 @@ export default function EditAgentForm({ agent }) {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 rounded-xl bg-[#0F4C5C] text-white hover:opacity-90 disabled:opacity-50"
+              className="rounded-xl bg-[#0F4C5C] px-6 py-3 text-white hover:opacity-90 disabled:opacity-50"
             >
               {loading ? "Saving..." : "Save Changes"}
             </button>

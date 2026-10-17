@@ -24,7 +24,7 @@ export default function AdminSidebar() {
         collapsedSize={80}
         onCollapse={() => setIsCollapsed(true)}
         onExpand={() => setIsCollapsed(false)}
-        className="bg-[#0F4C5C] text-white p-4 min-h-screen transition-all duration-300"
+        className="bg-[#0F4C5C] text-white p-4 h-full overflow-y-auto transition-all duration-300"
       >
         <aside className="h-full flex flex-col justify-between">
           <div>
