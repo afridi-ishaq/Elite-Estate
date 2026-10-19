@@ -3,6 +3,12 @@ import Image from "next/image";
 import { getAgents } from "@/lib/agent-service";
 import Container from "@/components/Container";
 
+
+export const metadata = {
+  title: "Our Agents",
+  description: "Meet the real estate professionals at Elite Estates.",
+};
+
 export default async function AgentsPage() {
   const agents = await getAgents();
 

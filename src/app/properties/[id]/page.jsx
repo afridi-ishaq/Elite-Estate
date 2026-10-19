@@ -7,6 +7,17 @@ import {
   getRelatedProperties,
 } from "@/lib/property-service";
 
+
+
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const property = await getPropertyById(id);
+
+  return {
+    title: property?.title || "Property Details",
+  };
+}
+
 export default async function PropertyDetailsPage({
   params,
 }) {

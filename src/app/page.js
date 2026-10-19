@@ -7,6 +7,11 @@ import Testimonials from "@/components/Testimonials";
 import AIAssistant from "@/components/AIAssistant";
 import { getFeaturedProperties } from "@/lib/property-service";
 
+
+export const metadata = {
+  title: "Home",
+};
+
 export default async function HomePage() {
   const featuredProperties = await getFeaturedProperties();
 

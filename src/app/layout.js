@@ -6,7 +6,10 @@ import "./globals.css";
 
 
 export const metadata = {
-  title: "Elite Estates",
+  title: {
+    default: "Elite Estates | Find Your Dream Property",
+    template: "%s | Elite Estates",
+  },
   description: "Luxury Real Estate Platform",
 };
 

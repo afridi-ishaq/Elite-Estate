@@ -5,6 +5,10 @@ import PropertyCard from "@/components/PropertyCard";
 import { getFilteredProperties } from "@/lib/property-service";
 import { Search, MapPin, Home, SlidersHorizontal, RotateCcw, Building2 } from "lucide-react";
 
+export const metadata = {
+  title: "Properties",
+};
+
 export default async function PropertiesPage({ searchParams }) {
   // Safe await for Next.js 15+ searchParams Promise
   const resolvedParams = await searchParams;

@@ -1,6 +1,11 @@
 import Container from "@/components/Container";
 import InquiryForm from "@/components/InquiryForm";
 
+export const metadata = {
+  title: "Contact Us",
+  description: "Get in touch with Elite Estates for property inquiries and assistance.",
+};
+
 export default function ContactPage() {
   return (
     <main className="min-h-screen bg-white pt-32 pb-24">

@@ -86,7 +86,7 @@ export default function EditAgentForm({ agent }) {
     <main className="min-h-screen bg-gray-50 px-4 pb-24 pt-20 sm:px-6 md:p-12 lg:p-20">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between md:mb-8">
+        <div className="mb-6 flex flex-col pt-6 gap-4 sm:flex-row sm:items-start sm:justify-between md:mb-8">
           <div className="min-w-0">
             <Link
               href="/admin/agents"

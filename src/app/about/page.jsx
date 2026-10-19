@@ -1,6 +1,11 @@
 import Link from "next/link";
 import Container from "@/components/Container";
 
+
+export const metadata = {
+  title: "About Us",
+};
+
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-white pt-32 pb-24">

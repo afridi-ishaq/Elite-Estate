@@ -4,6 +4,19 @@ import { notFound } from "next/navigation";
 import { getAgentById } from "@/lib/agent-service";
 import Container from "@/components/Container";
 
+
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const agent = await getAgentById(id);
+
+  return {
+    title: agent?.name || "Agent Details",
+    description: agent
+      ? `Learn more about ${agent.name}, a real estate agent at Elite Estates.`
+      : "Meet our real estate professionals.",
+  };
+}
+
 export default async function AgentProfilePage({ params }) {
   const { id } = await params;
 
