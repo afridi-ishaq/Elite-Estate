@@ -6,6 +6,7 @@ import {
   getPropertyById,
   getRelatedProperties,
 } from "@/lib/property-service";
+import PropertyMap from "@/components/PropertyMap";
 
 
 
@@ -167,6 +168,29 @@ export default async function PropertyDetailsPage({
 
           </div>
         </div>
+
+        <section className="mt-16 rounded-3xl border border-slate-200 bg-white p-5 sm:p-8">
+          <div className="mb-6">
+            <p className="text-sm font-semibold uppercase tracking-widest text-[#C89B3C]">
+              Location
+            </p>
+
+            <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-slate-900">
+              Explore the Neighborhood
+            </h2>
+
+            <p className="mt-2 text-slate-600">
+              {property.location
+                ? `${property.location}, ${property.city}`
+                : property.city}
+            </p>
+          </div>
+
+          <PropertyMap
+            properties={[property]}
+            height="350px"
+          />
+        </section>
 
         {/* RELATED PROPERTIES */}
         {relatedProperties.length > 0 && (

@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import Providers from "./providers";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import "./globals.css";
+import "leaflet/dist/leaflet.css";
 
 
 export const metadata = {
