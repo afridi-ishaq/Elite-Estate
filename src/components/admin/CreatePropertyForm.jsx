@@ -17,7 +17,7 @@ function Field({ label, children }) {
   );
 }
 
-export default function CreatePropertyForm() {
+export default function CreatePropertyForm({ agents = [] }) {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
@@ -36,15 +36,12 @@ export default function CreatePropertyForm() {
     image2: "",
     image3: "",
     image4: "",
+    agentId: "",
   });
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
-
-    setForm({
-      ...form,
-      [name]: type === "checkbox" ? checked : value,
-    });
+    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   }
 
   async function handleSubmit(e) {
@@ -79,47 +76,20 @@ export default function CreatePropertyForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <Field label="Title">
-        <input
-          name="title"
-          placeholder="e.g. Modern Villa in DHA"
-          value={form.title}
-          onChange={handleChange}
-          required
-          className={inputClass}
-        />
+        <input name="title" placeholder="e.g. Modern Villa in DHA" value={form.title} onChange={handleChange} required className={inputClass} />
       </Field>
 
       <Field label="Description">
-        <textarea
-          name="description"
-          placeholder="Describe the property"
-          rows={4}
-          value={form.description}
-          onChange={handleChange}
-          required
-          className={`${inputClass} resize-none`}
-        />
+        <textarea name="description" placeholder="Describe the property" rows={4} value={form.description} onChange={handleChange} required className={`${inputClass} resize-none`} />
       </Field>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="City">
-          <input
-            name="city"
-            placeholder="e.g. Islamabad"
-            value={form.city}
-            onChange={handleChange}
-            required
-            className={inputClass}
-          />
+          <input name="city" placeholder="e.g. Islamabad" value={form.city} onChange={handleChange} required className={inputClass} />
         </Field>
 
         <Field label="Property Type">
-          <select
-            name="propertyType"
-            value={form.propertyType}
-            onChange={handleChange}
-            className={inputClass}
-          >
+          <select name="propertyType" value={form.propertyType} onChange={handleChange} className={inputClass}>
             <option value="House">House</option>
             <option value="Villa">Villa</option>
             <option value="Apartment">Apartment</option>
@@ -129,102 +99,48 @@ export default function CreatePropertyForm() {
         </Field>
       </div>
 
+      <Field label="Listing Agent (shows in the agent's portfolio)">
+        <select name="agentId" value={form.agentId} onChange={handleChange} className={inputClass}>
+          <option value="">No agent assigned</option>
+          {agents.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.name}
+            </option>
+          ))}
+        </select>
+      </Field>
+
       <div className="grid gap-5 sm:grid-cols-3">
         <Field label="Price (PKR)">
-          <input
-            name="price"
-            type="number"
-            inputMode="numeric"
-            min="0"
-            placeholder="e.g. 50000000"
-            value={form.price}
-            onChange={handleChange}
-            required
-            className={inputClass}
-          />
+          <input name="price" type="number" inputMode="numeric" min="0" placeholder="e.g. 50000000" value={form.price} onChange={handleChange} required className={inputClass} />
         </Field>
 
         <Field label="Bedrooms">
-          <input
-            name="bedrooms"
-            type="number"
-            inputMode="numeric"
-            min="0"
-            placeholder="0"
-            value={form.bedrooms}
-            onChange={handleChange}
-            className={inputClass}
-          />
+          <input name="bedrooms" type="number" inputMode="numeric" min="0" placeholder="0" value={form.bedrooms} onChange={handleChange} className={inputClass} />
         </Field>
 
         <Field label="Bathrooms">
-          <input
-            name="bathrooms"
-            type="number"
-            inputMode="numeric"
-            min="0"
-            placeholder="0"
-            value={form.bathrooms}
-            onChange={handleChange}
-            className={inputClass}
-          />
+          <input name="bathrooms" type="number" inputMode="numeric" min="0" placeholder="0" value={form.bathrooms} onChange={handleChange} className={inputClass} />
         </Field>
       </div>
 
       <div className="space-y-4">
         <Field label="Main Image URL">
-          <input
-            name="image"
-            type="url"
-            placeholder="https://..."
-            value={form.image}
-            onChange={handleChange}
-            className={inputClass}
-          />
+          <input name="image" type="url" placeholder="https://..." value={form.image} onChange={handleChange} className={inputClass} />
         </Field>
-
         <Field label="Image URL 2 (optional)">
-          <input
-            name="image2"
-            type="url"
-            placeholder="https://..."
-            value={form.image2}
-            onChange={handleChange}
-            className={inputClass}
-          />
+          <input name="image2" type="url" placeholder="https://..." value={form.image2} onChange={handleChange} className={inputClass} />
         </Field>
-
         <Field label="Image URL 3 (optional)">
-          <input
-            name="image3"
-            type="url"
-            placeholder="https://..."
-            value={form.image3}
-            onChange={handleChange}
-            className={inputClass}
-          />
+          <input name="image3" type="url" placeholder="https://..." value={form.image3} onChange={handleChange} className={inputClass} />
         </Field>
-
         <Field label="Image URL 4 (optional)">
-          <input
-            name="image4"
-            type="url"
-            placeholder="https://..."
-            value={form.image4}
-            onChange={handleChange}
-            className={inputClass}
-          />
+          <input name="image4" type="url" placeholder="https://..." value={form.image4} onChange={handleChange} className={inputClass} />
         </Field>
       </div>
 
       <label className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3">
-        <input
-          type="checkbox"
-          name="featured"
-          checked={form.featured}
-          onChange={handleChange}
-          className="h-5 w-5 accent-[#0F4C5C]"
-        />
+        <input type="checkbox" name="featured" checked={form.featured} onChange={handleChange} className="h-5 w-5 accent-[#0F4C5C]" />
         <span className="text-sm font-medium">Featured property</span>
       </label>
 

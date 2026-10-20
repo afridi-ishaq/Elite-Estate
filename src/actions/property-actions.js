@@ -2,25 +2,30 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/admin-guard";
 
 export async function updateProperty(id, formData) {
-  console.log("Updating property:", id);
+  await requireAdmin();
 
-  await prisma.property.update({
-    where: {
-      id,
-    },
+  const existing = await prisma.property.findUnique({
+    where: { id },
+    select: { agentId: true },
+  });
+
+  const agentId = formData.get("agentId") || null;
+  const price = Number(formData.get("price"));
+
+  const property = await prisma.property.update({
+    where: { id },
     data: {
-      title: formData.get("title"),
-      description: formData.get("description"),
-      city: formData.get("city"),
-      price: Number(formData.get("price")),
-      bedrooms: Number(formData.get("bedrooms")),
-      bathrooms: Number(formData.get("bathrooms")),
-
-      agentId:
-  formData.get("agentId") || null,
-
+      title: String(formData.get("title") || "").trim(),
+      description: String(formData.get("description") || "").trim(),
+      city: String(formData.get("city") || "").trim(),
+      price: Number.isFinite(price) ? price : 0,
+      bedrooms: Number(formData.get("bedrooms")) || 0,
+      bathrooms: Number(formData.get("bathrooms")) || 0,
+      propertyType: formData.get("propertyType") || null,
+      agentId,
       images: [
         formData.get("image1"),
         formData.get("image2"),
@@ -30,7 +35,11 @@ export async function updateProperty(id, formData) {
     },
   });
 
-  console.log("Property updated");
-
+  revalidatePath("/properties");
+  revalidatePath(`/properties/${property.id}`);
   revalidatePath("/admin/properties");
+
+  // Refresh the portfolio of the old and the new agent
+  if (existing?.agentId) revalidatePath(`/agents/${existing.agentId}`);
+  if (agentId) revalidatePath(`/agents/${agentId}`);
 }
