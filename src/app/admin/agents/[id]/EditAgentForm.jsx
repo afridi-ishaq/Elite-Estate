@@ -5,29 +5,37 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const inputClass =
-  "w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#0F4C5C]";
+  "w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#0F4C5C] disabled:bg-gray-100 disabled:cursor-not-allowed";
+
+// Config array to make form fields completely dynamic and easy to scale
+const AGENT_FIELDS = [
+  { name: "name", label: "Full Name", type: "text", required: true },
+  { name: "email", label: "Email", type: "email", required: true },
+  { name: "phone", label: "Phone", type: "tel", placeholder: "+1 (555) 000-0000" },
+  { name: "title", label: "Job Title", type: "text", placeholder: "Senior Property Consultant" },
+  { name: "experience", label: "Experience (Years)", type: "number", min: "0", inputMode: "numeric" },
+  { name: "listings", label: "Listings Count", type: "number", min: "0", inputMode: "numeric" },
+  { name: "image", label: "Profile Image URL", type: "url", placeholder: "https://...", span: "full" },
+  { name: "bio", label: "Bio", type: "textarea", rows: 5, span: "full" },
+];
 
 export default function EditAgentForm({ agent }) {
   const router = useRouter();
 
-  const [form, setForm] = useState({
-    name: agent.name ?? "",
-    email: agent.email ?? "",
-    phone: agent.phone ?? "",
-    title: agent.title ?? "",
-    bio: agent.bio ?? "",
-    image: agent.image ?? "",
-    experience: agent.experience ?? "",
-    listings: agent.listings ?? "",
-  });
+  // Initialize form dynamically from agent props with fallback defaults
+  const [form, setForm] = useState(() =>
+    AGENT_FIELDS.reduce((acc, field) => {
+      acc[field.name] = agent?.[field.name] ?? "";
+      return acc;
+    }, {})
+  );
 
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   function handleChange(e) {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   }
 
   async function handleSubmit(e) {
@@ -59,8 +67,10 @@ export default function EditAgentForm({ agent }) {
   }
 
   async function handleDelete() {
-    const confirmed = confirm("Are you sure you want to delete this agent?");
+    const confirmed = confirm("Are you sure you want to delete this agent? This action cannot be undone.");
     if (!confirmed) return;
+
+    setDeleting(true);
 
     try {
       const response = await fetch(`/api/agents/${agent.id}`, {
@@ -79,6 +89,8 @@ export default function EditAgentForm({ agent }) {
     } catch (error) {
       console.error(error);
       alert("Something went wrong");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -90,146 +102,88 @@ export default function EditAgentForm({ agent }) {
           <div className="min-w-0">
             <Link
               href="/admin/agents"
-              className="text-sm text-gray-500 hover:text-gray-900"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
               ← Back to Agents
             </Link>
 
             <h1 className="mt-3 text-2xl font-bold text-gray-900 md:text-3xl">
-              Edit Agent
+              Edit Agent: {agent.name || "Agent"}
             </h1>
 
-            <p className="mt-1 text-gray-500">Update agent information.</p>
+            <p className="mt-1 text-gray-500">Update agent profile information.</p>
           </div>
 
           <button
             type="button"
             onClick={handleDelete}
-            className="self-start rounded-xl bg-red-50 px-5 py-2.5 text-red-600 hover:bg-red-100"
+            disabled={deleting || loading}
+            className="self-start rounded-xl bg-red-50 px-5 py-2.5 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
           >
-            Delete Agent
+            {deleting ? "Deleting..." : "Delete Agent"}
           </button>
         </div>
 
         {/* Form */}
         <form
           onSubmit={handleSubmit}
-          className="space-y-6 rounded-2xl border border-gray-200 bg-white p-4 sm:p-6"
+          className="space-y-6 rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm"
         >
           <div className="grid gap-5 md:grid-cols-2">
-            <div>
-              <label className="mb-2 block text-sm font-medium">Full Name</label>
-              <input
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                required
-                className={inputClass}
-              />
-            </div>
+            {AGENT_FIELDS.map((field) => {
+              const isFullSpan = field.span === "full";
+              return (
+                <div key={field.name} className={isFullSpan ? "md:col-span-2" : ""}>
+                  <label htmlFor={field.name} className="mb-2 block text-sm font-medium text-gray-700">
+                    {field.label} {field.required && <span className="text-red-500">*</span>}
+                  </label>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium">Email</label>
-              <input
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                required
-                className={inputClass}
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium">Phone</label>
-              <input
-                name="phone"
-                type="tel"
-                value={form.phone}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium">Job Title</label>
-              <input
-                name="title"
-                value={form.title}
-                onChange={handleChange}
-                placeholder="Senior Property Consultant"
-                className={inputClass}
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                Experience (Years)
-              </label>
-              <input
-                name="experience"
-                type="number"
-                min="0"
-                inputMode="numeric"
-                value={form.experience}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium">Listings</label>
-              <input
-                name="listings"
-                type="number"
-                min="0"
-                inputMode="numeric"
-                value={form.listings}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-medium">
-                Profile Image URL
-              </label>
-              <input
-                name="image"
-                value={form.image}
-                onChange={handleChange}
-                placeholder="https://..."
-                className={inputClass}
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-medium">Bio</label>
-              <textarea
-                name="bio"
-                value={form.bio}
-                onChange={handleChange}
-                rows={5}
-                className={`${inputClass} resize-none`}
-              />
-            </div>
+                  {field.type === "textarea" ? (
+                    <textarea
+                      id={field.name}
+                      name={field.name}
+                      value={form[field.name]}
+                      onChange={handleChange}
+                      rows={field.rows || 4}
+                      disabled={loading || deleting}
+                      placeholder={field.placeholder}
+                      className={`${inputClass} resize-none`}
+                    />
+                  ) : (
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      type={field.type}
+                      value={form[field.name]}
+                      onChange={handleChange}
+                      required={field.required}
+                      min={field.min}
+                      inputMode={field.inputMode}
+                      placeholder={field.placeholder}
+                      disabled={loading || deleting}
+                      className={inputClass}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col-reverse gap-3 border-t pt-4 sm:flex-row sm:justify-end">
+          <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end">
             <Link
               href="/admin/agents"
-              className="rounded-xl border px-5 py-3 text-center hover:bg-gray-50"
+              className="rounded-xl border border-gray-300 px-5 py-3 text-center text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Cancel
             </Link>
 
             <button
               type="submit"
-              disabled={loading}
-              className="rounded-xl bg-[#0F4C5C] px-6 py-3 text-white hover:opacity-90 disabled:opacity-50"
+              disabled={loading || deleting}
+              className="rounded-xl bg-[#0F4C5C] px-6 py-3 text-white hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {loading ? "Saving..." : "Save Changes"}
+              {loading ? "Saving Changes..." : "Save Changes"}
             </button>
           </div>
         </form>
