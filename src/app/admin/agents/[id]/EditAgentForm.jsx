@@ -187,6 +187,49 @@ export default function EditAgentForm({ agent }) {
             </button>
           </div>
         </form>
+                {/* Portfolio (read-only, assigned from each property's edit page) */}
+        <section className="mt-8 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+          <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="text-lg font-bold text-gray-900">
+              Portfolio ({(agent.properties ?? []).length})
+            </h2>
+            <Link
+              href="/admin/properties/new"
+              className="text-sm font-semibold text-[#0F4C5C] hover:underline"
+            >
+              + Add property
+            </Link>
+          </div>
+
+          {(agent.properties ?? []).length === 0 ? (
+            <p className="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
+              No properties assigned yet. Open a property&apos;s edit page and
+              choose this agent under &quot;Assigned Agent&quot;.
+            </p>
+          ) : (
+            <ul className="divide-y divide-gray-100">
+              {agent.properties.map((p) => (
+                <li
+                  key={p.id}
+                  className="flex items-center justify-between gap-3 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-gray-900">{p.title}</p>
+                    <p className="truncate text-sm text-gray-500">
+                      {p.city} · PKR {Number(p.price).toLocaleString()}
+                    </p>
+                  </div>
+                  <Link
+                    href={`/admin/properties/${p.id}`}
+                    className="shrink-0 rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+                  >
+                    Edit
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
     </main>
   );
