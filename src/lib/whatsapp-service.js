@@ -18,26 +18,47 @@ async function getConfig() {
 }
 
 async function postMessage(cfg, payload) {
-  const res = await fetch(
-    `https://graph.facebook.com/${API_VERSION}/${cfg.phoneId}/messages`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${cfg.token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        messaging_product: "whatsapp",
-        to: cfg.to,
-        ...payload,
-      }),
-    }
-  );
+  const url = `https://graph.facebook.com/${API_VERSION}/${cfg.phoneId}/messages`;
+
+  console.log("[WA TEST] Starting request:", {
+    apiVersion: API_VERSION,
+    phoneId: cfg.phoneId,
+    recipient: cfg.to,
+    hasToken: Boolean(cfg.token),
+  });
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${cfg.token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: cfg.to,
+      ...payload,
+    }),
+  });
+
+  const responseText = await res.text();
+
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    data = { rawResponse: responseText };
+  }
+
+  console.log("[WA TEST] Meta HTTP status:", res.status);
+  console.log("[WA TEST] Meta response:", JSON.stringify(data));
 
   if (!res.ok) {
-    throw new Error(`WhatsApp error ${res.status}: ${await res.text()}`);
+    throw new Error(
+      `WhatsApp error ${res.status}: ${JSON.stringify(data)}`
+    );
   }
-  return await res.json();
+
+  return data;
 }
 
 function assertConfigured(cfg) {
