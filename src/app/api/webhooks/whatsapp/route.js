@@ -87,6 +87,15 @@ export async function POST(request) {
         const value = change.value || {};
         const contacts = value.contacts || [];
 
+        for (const status of value.statuses || []) {
+  console.log("[WA DELIVERY STATUS]", JSON.stringify({
+    messageId: status.id,
+    status: status.status,
+    recipient: status.recipient_id,
+    errors: status.errors || [],
+  }));
+}
+
         for (const msg of value.messages || []) {
           messageCount++;
           const contact = contacts.find((c) => c.wa_id === msg.from);
