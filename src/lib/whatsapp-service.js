@@ -81,8 +81,13 @@ export async function sendTestMessage() {
   assertConfigured(cfg);
 
   return await postMessage(cfg, {
-    type: "text",
-    text: { body: "✅ Elite Estates: WhatsApp alerts are connected." },
+    type: "template",
+    template: {
+      name: "hello_world",
+      language: {
+        code: "en_US",
+      },
+    },
   });
 }
 
