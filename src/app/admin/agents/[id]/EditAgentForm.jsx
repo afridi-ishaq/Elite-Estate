@@ -1,28 +1,65 @@
+
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const inputClass =
-  "w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#0F4C5C] disabled:bg-gray-100 disabled:cursor-not-allowed";
+import {
+  User,
+  Mail,
+  Phone,
+  BriefcaseBusiness,
+  CalendarDays,
+  Building2,
+  Image,
+  FileText,
+  ArrowLeft,
+  Save,
+  Trash2,
+  Loader2,
+  Home,
+  MapPin,
+  Pencil,
+  AlertTriangle,
+} from "lucide-react";
 
-// Config array to make form fields completely dynamic and easy to scale
+const inputClass =
+  "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#0F4C5C] focus:ring-4 focus:ring-[#0F4C5C]/10 disabled:cursor-not-allowed disabled:bg-slate-100";
+
 const AGENT_FIELDS = [
-  { name: "name", label: "Full Name", type: "text", required: true },
-  { name: "email", label: "Email", type: "email", required: true },
-  { name: "phone", label: "Phone", type: "tel", placeholder: "+1 (555) 000-0000" },
-  { name: "title", label: "Job Title", type: "text", placeholder: "Senior Property Consultant" },
-  { name: "experience", label: "Experience (Years)", type: "number", min: "0", inputMode: "numeric" },
-  { name: "listings", label: "Listings Count", type: "number", min: "0", inputMode: "numeric" },
-  { name: "image", label: "Profile Image URL", type: "url", placeholder: "https://...", span: "full" },
-  { name: "bio", label: "Bio", type: "textarea", rows: 5, span: "full" },
+  { name: "name", label: "Full Name", type: "text", required: true, icon: User },
+  { name: "email", label: "Email Address", type: "email", required: true, icon: Mail },
+  { name: "phone", label: "Phone Number", type: "tel", placeholder: "+1 (555) 000-0000", icon: Phone },
+  { name: "title", label: "Job Title", type: "text", placeholder: "Senior Property Consultant", icon: BriefcaseBusiness },
+  { name: "experience", label: "Experience (Years)", type: "number", min: "0", inputMode: "numeric", icon: CalendarDays },
+  { name: "listings", label: "Listings Count", type: "number", min: "0", inputMode: "numeric", icon: Building2 },
+  { name: "image", label: "Profile Image URL", type: "url", placeholder: "https://...", span: "full", icon: Image },
+  { name: "bio", label: "Professional Biography", type: "textarea", rows: 5, span: "full", icon: FileText },
 ];
+
+function FormSection({ icon: Icon, title, description, children }) {
+  return (
+    <section>
+      <div className="mb-6 flex items-center gap-3 border-b border-slate-100 pb-4">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0F4C5C]/10 text-[#0F4C5C]">
+          <Icon size={20} />
+        </div>
+
+        <div>
+          <h2 className="font-bold text-slate-800">{title}</h2>
+          <p className="mt-0.5 text-xs text-slate-500">{description}</p>
+        </div>
+      </div>
+
+      {children}
+    </section>
+  );
+}
 
 export default function EditAgentForm({ agent }) {
   const router = useRouter();
 
-  // Initialize form dynamically from agent props with fallback defaults
   const [form, setForm] = useState(() =>
     AGENT_FIELDS.reduce((acc, field) => {
       acc[field.name] = agent?.[field.name] ?? "";
@@ -67,7 +104,10 @@ export default function EditAgentForm({ agent }) {
   }
 
   async function handleDelete() {
-    const confirmed = confirm("Are you sure you want to delete this agent? This action cannot be undone.");
+    const confirmed = confirm(
+      "Are you sure you want to delete this agent? This action cannot be undone."
+    );
+
     if (!confirmed) return;
 
     setDeleting(true);
@@ -95,85 +135,140 @@ export default function EditAgentForm({ agent }) {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 px-4 pb-24 pt-20 sm:px-6 md:p-12 lg:p-20">
-      <div className="mx-auto max-w-4xl">
-        {/* Header */}
-        <div className="mb-6 flex flex-col pt-6 gap-4 sm:flex-row sm:items-start sm:justify-between md:mb-8">
-          <div className="min-w-0">
+    <main className="min-h-screen bg-slate-50 px-4 pb-16 pt-28 sm:px-6">
+      <div className="mx-auto max-w-5xl">
+
+        {/* Page heading */}
+        <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+          <div>
             <Link
               href="/admin/agents"
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+              className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#0F4C5C]"
             >
-              ← Back to Agents
+              <ArrowLeft size={16} />
+              Back to Agents
             </Link>
 
-            <h1 className="mt-3 text-2xl font-bold text-gray-900 md:text-3xl">
-              Edit Agent: {agent.name || "Agent"}
+            <p className="mb-2 text-sm font-semibold text-[#0F4C5C]">
+              ADMINISTRATION / AGENTS
+            </p>
+
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+              Edit Agent
             </h1>
 
-            <p className="mt-1 text-gray-500">Update agent profile information.</p>
+            <p className="mt-2 text-sm text-slate-500">
+              Update professional information and manage this agent's portfolio.
+            </p>
           </div>
 
           <button
             type="button"
             onClick={handleDelete}
             disabled={deleting || loading}
-            className="self-start rounded-xl bg-red-50 px-5 py-2.5 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 self-start rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
+            {deleting ? (
+              <Loader2 size={17} className="animate-spin" />
+            ) : (
+              <Trash2 size={17} />
+            )}
             {deleting ? "Deleting..." : "Delete Agent"}
           </button>
         </div>
 
-        {/* Form */}
+        {/* Agent form */}
         <form
           onSubmit={handleSubmit}
-          className="space-y-6 rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm"
+          className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
         >
-          <div className="grid gap-5 md:grid-cols-2">
-            {AGENT_FIELDS.map((field) => {
-              const isFullSpan = field.span === "full";
-              return (
-                <div key={field.name} className={isFullSpan ? "md:col-span-2" : ""}>
-                  <label htmlFor={field.name} className="mb-2 block text-sm font-medium text-gray-700">
-                    {field.label} {field.required && <span className="text-red-500">*</span>}
-                  </label>
 
-                  {field.type === "textarea" ? (
-                    <textarea
-                      id={field.name}
-                      name={field.name}
-                      value={form[field.name]}
-                      onChange={handleChange}
-                      rows={field.rows || 4}
-                      disabled={loading || deleting}
-                      placeholder={field.placeholder}
-                      className={`${inputClass} resize-none`}
-                    />
-                  ) : (
-                    <input
-                      id={field.name}
-                      name={field.name}
-                      type={field.type}
-                      value={form[field.name]}
-                      onChange={handleChange}
-                      required={field.required}
-                      min={field.min}
-                      inputMode={field.inputMode}
-                      placeholder={field.placeholder}
-                      disabled={loading || deleting}
-                      className={inputClass}
-                    />
-                  )}
-                </div>
-              );
-            })}
+          {/* Form header */}
+          <div className="bg-gradient-to-r from-[#0F4C5C] to-[#136175] px-6 py-7 text-white sm:px-8">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/15">
+                <Pencil size={23} />
+              </div>
+
+              <div>
+                <h2 className="text-xl font-bold">
+                  {agent.name || "Agent Profile"}
+                </h2>
+                <p className="mt-1 text-sm text-white/75">
+                  Edit agent profile information and professional details.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Form fields */}
+          <div className="space-y-10 p-6 sm:p-8">
+
+            <FormSection
+              icon={User}
+              title="Personal & Professional Information"
+              description="Update the agent's contact details and professional profile."
+            >
+              <div className="grid gap-5 md:grid-cols-2">
+                {AGENT_FIELDS.map((field) => {
+                  const Icon = field.icon;
+                  const isFullSpan = field.span === "full";
+
+                  return (
+                    <div
+                      key={field.name}
+                      className={isFullSpan ? "md:col-span-2" : ""}
+                    >
+                      <label
+                        htmlFor={field.name}
+                        className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700"
+                      >
+                        <Icon size={16} className="text-[#0F4C5C]" />
+                        {field.label}
+                        {field.required && (
+                          <span className="text-red-500">*</span>
+                        )}
+                      </label>
+
+                      {field.type === "textarea" ? (
+                        <textarea
+                          id={field.name}
+                          name={field.name}
+                          value={form[field.name]}
+                          onChange={handleChange}
+                          rows={field.rows || 4}
+                          disabled={loading || deleting}
+                          placeholder={field.placeholder}
+                          className={`${inputClass} resize-none`}
+                        />
+                      ) : (
+                        <input
+                          id={field.name}
+                          name={field.name}
+                          type={field.type}
+                          value={form[field.name]}
+                          onChange={handleChange}
+                          required={field.required}
+                          min={field.min}
+                          inputMode={field.inputMode}
+                          placeholder={field.placeholder}
+                          disabled={loading || deleting}
+                          className={inputClass}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </FormSection>
+
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end">
+          <div className="flex flex-col-reverse gap-3 border-t border-slate-100 bg-slate-50 px-6 py-5 sm:flex-row sm:justify-end sm:px-8">
             <Link
               href="/admin/agents"
-              className="rounded-xl border border-gray-300 px-5 py-3 text-center text-gray-700 hover:bg-gray-50 transition-colors"
+              className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
             >
               Cancel
             </Link>
@@ -181,55 +276,112 @@ export default function EditAgentForm({ agent }) {
             <button
               type="submit"
               disabled={loading || deleting}
-              className="rounded-xl bg-[#0F4C5C] px-6 py-3 text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0F4C5C] px-7 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0b3844] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? "Saving Changes..." : "Save Changes"}
+              {loading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  Saving Changes...
+                </>
+              ) : (
+                <>
+                  <Save size={18} />
+                  Save Changes
+                </>
+              )}
             </button>
           </div>
         </form>
-                {/* Portfolio (read-only, assigned from each property's edit page) */}
-        <section className="mt-8 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
-          <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-lg font-bold text-gray-900">
-              Portfolio ({(agent.properties ?? []).length})
-            </h2>
+
+        {/* Portfolio */}
+        <section className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+          <div className="flex flex-col justify-between gap-4 border-b border-slate-100 px-6 py-5 sm:flex-row sm:items-center sm:px-8">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0F4C5C]/10 text-[#0F4C5C]">
+                <Building2 size={20} />
+              </div>
+
+              <div>
+                <h2 className="font-bold text-slate-800">
+                  Property Portfolio
+                </h2>
+                <p className="mt-0.5 text-xs text-slate-500">
+                  {(agent.properties ?? []).length} assigned properties
+                </p>
+              </div>
+            </div>
+
             <Link
               href="/admin/properties/new"
-              className="text-sm font-semibold text-[#0F4C5C] hover:underline"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0F4C5C] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0b3844]"
             >
-              + Add property
+              <Home size={16} />
+              Add Property
             </Link>
           </div>
 
-          {(agent.properties ?? []).length === 0 ? (
-            <p className="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
-              No properties assigned yet. Open a property&apos;s edit page and
-              choose this agent under &quot;Assigned Agent&quot;.
-            </p>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {agent.properties.map((p) => (
-                <li
-                  key={p.id}
-                  className="flex items-center justify-between gap-3 py-3"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate font-medium text-gray-900">{p.title}</p>
-                    <p className="truncate text-sm text-gray-500">
-                      {p.city} · PKR {Number(p.price).toLocaleString()}
-                    </p>
-                  </div>
-                  <Link
-                    href={`/admin/properties/${p.id}`}
-                    className="shrink-0 rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50"
+          <div className="p-6 sm:p-8">
+            {(agent.properties ?? []).length === 0 ? (
+              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-200 text-slate-500">
+                  <AlertTriangle size={22} />
+                </div>
+
+                <h3 className="font-semibold text-slate-700">
+                  No Properties Assigned
+                </h3>
+
+                <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+                  This agent doesn't have any assigned properties yet.
+                  Open a property's edit page and choose this agent under
+                  Assigned Agent.
+                </p>
+              </div>
+            ) : (
+              <ul className="divide-y divide-slate-100">
+                {agent.properties.map((p) => (
+                  <li
+                    key={p.id}
+                    className="flex flex-col justify-between gap-4 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-center"
                   >
-                    Edit
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
+                    <div className="flex min-w-0 items-start gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0F4C5C]/10 text-[#0F4C5C]">
+                        <Home size={20} />
+                      </div>
+
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold text-slate-800">
+                          {p.title}
+                        </p>
+
+                        <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin size={13} />
+                            {p.city}
+                          </span>
+
+                          <span>
+                            PKR {Number(p.price).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Link
+                      href={`/admin/properties/${p.id}`}
+                      className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-[#0F4C5C] hover:text-[#0F4C5C]"
+                    >
+                      <Pencil size={14} />
+                      Edit Property
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </section>
+
       </div>
     </main>
   );

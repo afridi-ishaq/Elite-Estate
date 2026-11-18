@@ -81,9 +81,12 @@ export async function sendTestMessage() {
   assertConfigured(cfg);
 
   return await postMessage(cfg, {
-    type: "text",
-    text: {
-      body: "🏡 Welcome to Elite Estates!\n\nCongratulations! Your WhatsApp integration is successfully connected.\n\nWe are ready to keep you updated about property inquiries, new leads, and important notifications.\n\nThank you for choosing Elite Estates!",
+    type: "template",
+    template: {
+      name: "hello_world",
+      language: {
+        code: "en_US",
+      },
     },
   });
 }
