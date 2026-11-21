@@ -108,9 +108,26 @@ export async function analyzeLead(id) {
 
   // WhatsApp alert for HOT leads, once per lead.
   // A failure here must never break the analysis itself.
+
+  // WhatsApp alert for HOT leads, once per lead.
+  console.log("[LEAD ANALYSIS]", {
+    leadId: id,
+    score: updated.aiScore,
+    temperature: updated.aiTemperature,
+    alreadyAlerted: Boolean(updated.whatsappAlertedAt),
+  });
+
   if (updated.aiTemperature === "HOT" && !updated.whatsappAlertedAt) {
     try {
-      await sendHotLeadAlert(updated);
+      console.log("[WHATSAPP] Attempting HOT lead alert:", id);
+
+      const result = await sendHotLeadAlert(updated);
+
+      console.log("[WHATSAPP] Meta accepted alert:", {
+        leadId: id,
+        messageId: result?.messages?.[0]?.id,
+      });
+
       await prisma.$transaction([
         prisma.lead.update({
           where: { id },
@@ -120,14 +137,16 @@ export async function analyzeLead(id) {
           data: {
             leadId: id,
             type: "WHATSAPP_ALERT",
-            note: "HOT lead alert sent via WhatsApp",
+            note: "HOT lead alert accepted by WhatsApp API",
           },
         }),
       ]);
     } catch (err) {
-      console.error("WhatsApp alert failed:", err.message);
+      console.error("[WHATSAPP] Alert failed for lead:", id);
+      console.error("[WHATSAPP] Error details:", err);
     }
   }
+
 
   return updated;
 }
