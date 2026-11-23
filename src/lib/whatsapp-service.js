@@ -91,6 +91,8 @@ export async function sendTestMessage() {
   });
 }
 
+const clean = (v) =>
+  String(v ?? "").replace(/[\n\t\r]+/g, " ").replace(/ {2,}/g, " ").trim() || "N/A";
 export async function sendHotLeadAlert(lead) {
   const cfg = await getConfig();
   assertConfigured(cfg);
@@ -109,10 +111,10 @@ export async function sendHotLeadAlert(lead) {
           {
             type: "body",
             parameters: [
-              { type: "text", text: lead.name },
-              { type: "text", text: budget },
-              { type: "text", text: String(lead.aiScore) },
-              { type: "text", text: lead.phone },
+              { type: "text", text: clean(lead.name) },
+              { type: "text", text: clean(budget) },
+              { type: "text", text: clean(lead.aiScore) },
+              { type: "text", text: clean(lead.phone) },
             ],
           },
         ],
