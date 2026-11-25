@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -6,9 +7,21 @@ const emptyForm = {
   name: "",
   email: "",
   phone: "",
+  budget: "",
   message: "",
-  website: "", // hidden spam trap, real visitors never fill it
+  website: "",
 };
+
+const budgetOptions = [
+  "Under PKR 50 lakh",
+  "PKR 50 lakh – 1 crore",
+  "PKR 1 – 2 crore",
+  "PKR 2 – 5 crore",
+  "PKR 5 – 10 crore",
+  "PKR 10 – 20 crore",
+  "Above PKR 20 crore",
+  "Not decided yet",
+];
 
 export default function InquiryForm() {
   const [form, setForm] = useState(emptyForm);
@@ -40,7 +53,7 @@ export default function InquiryForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error);
+        throw new Error(data.error || "Failed to submit inquiry.");
       }
 
       setSuccess("Inquiry submitted successfully!");
@@ -55,7 +68,13 @@ export default function InquiryForm() {
 
   return (
     <div className="bg-white p-8 rounded-3xl shadow-md">
-      <h3 className="text-2xl font-bold mb-6">Request Information</h3>
+      <h3 className="text-2xl font-bold mb-2">
+        Request Information
+      </h3>
+
+      <p className="text-gray-500 text-sm mb-6">
+        Tell us what you're looking for and our team will help you.
+      </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
@@ -65,7 +84,7 @@ export default function InquiryForm() {
           value={form.name}
           onChange={handleChange}
           required
-          className="w-full border border-gray-300 rounded-xl p-3"
+          className="w-full border border-gray-300 rounded-xl p-3 outline-none focus:border-[#0F4C5C] focus:ring-1 focus:ring-[#0F4C5C]"
         />
 
         <input
@@ -75,29 +94,45 @@ export default function InquiryForm() {
           value={form.email}
           onChange={handleChange}
           required
-          className="w-full border border-gray-300 rounded-xl p-3"
+          className="w-full border border-gray-300 rounded-xl p-3 outline-none focus:border-[#0F4C5C] focus:ring-1 focus:ring-[#0F4C5C]"
         />
 
         <input
-          type="text"
+          type="tel"
           name="phone"
           placeholder="Phone Number"
           value={form.phone}
           onChange={handleChange}
           required
-          className="w-full border border-gray-300 rounded-xl p-3"
+          className="w-full border border-gray-300 rounded-xl p-3 outline-none focus:border-[#0F4C5C] focus:ring-1 focus:ring-[#0F4C5C]"
         />
+
+        {/* Budget */}
+        <select
+          name="budget"
+          value={form.budget}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-xl p-3 bg-white text-gray-600 outline-none focus:border-[#0F4C5C] focus:ring-1 focus:ring-[#0F4C5C]"
+        >
+          <option value="">Select Your Budget (Optional)</option>
+
+          {budgetOptions.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
 
         <textarea
           name="message"
-          placeholder="Message"
+          placeholder="Tell us about the property you're looking for..."
           rows="5"
           value={form.message}
           onChange={handleChange}
-          className="w-full border border-gray-300 rounded-xl p-3"
+          className="w-full border border-gray-300 rounded-xl p-3 outline-none focus:border-[#0F4C5C] focus:ring-1 focus:ring-[#0F4C5C]"
         />
 
-        {/* Hidden spam trap: bots fill it, humans never see it */}
+        {/* Hidden spam trap */}
         <input
           type="text"
           name="website"
@@ -112,13 +147,15 @@ export default function InquiryForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#0F4C5C] text-white py-3 rounded-xl font-semibold disabled:opacity-60"
+          className="w-full bg-[#0F4C5C] hover:bg-[#0b3844] text-white py-3 rounded-xl font-semibold transition disabled:opacity-60"
         >
           {loading ? "Submitting..." : "Submit Inquiry"}
         </button>
 
         {success && (
-          <p className="text-green-600 text-center">{success}</p>
+          <p className="text-green-600 text-center">
+            {success}
+          </p>
         )}
       </form>
     </div>

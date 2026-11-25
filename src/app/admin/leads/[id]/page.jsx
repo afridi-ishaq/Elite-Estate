@@ -194,9 +194,8 @@ export default async function LeadDetailsPage({ params }) {
                         icon={Wallet}
                         label="Budget"
                         value={
-                          lead.budget
-                            ? lead.budget.toLocaleString()
-                            : "-"
+                          lead.budgetRange ||
+                          (lead.budget ? lead.budget.toLocaleString() : "-")
                         }
                       />
                     </div>

@@ -97,7 +97,7 @@ export async function sendHotLeadAlert(lead) {
   const cfg = await getConfig();
   assertConfigured(cfg);
 
-  const budget = formatBudget(lead.budget);
+  const budget = lead.budgetRange || formatBudget(lead.budget);
   const templateName = process.env.WHATSAPP_TEMPLATE_NAME;
 
   // Template mode: works outside the 24-hour window

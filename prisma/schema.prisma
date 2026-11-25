@@ -114,6 +114,7 @@ model Lead {
 
   city         String?
   budget       Float?
+  budgetRange  String?
   propertyType String?
 
   message      String?

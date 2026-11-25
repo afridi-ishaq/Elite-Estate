@@ -1,3 +1,4 @@
+
 import { NextResponse, after } from "next/server";
 import { auth } from "@/lib/auth";
 import { createLead, analyzeLead } from "@/lib/lead-service";
@@ -25,7 +26,9 @@ export async function POST(request) {
 
     if (!isAdmin) {
       // Honeypot: real visitors never fill this hidden field
-      if (body.website) return NextResponse.json({ success: true });
+      if (body.website) {
+        return NextResponse.json({ success: true });
+      }
 
       const ip =
         request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
@@ -43,6 +46,16 @@ export async function POST(request) {
     const email = str(body.email, 150);
     const phone = str(body.phone, 30);
 
+    const budgetRange = str(
+  body.budgetRange ||
+    (typeof body.budget === "string" &&
+    body.budget.trim() &&
+    !Number.isFinite(Number(body.budget))
+      ? body.budget
+      : ""),
+  100
+);
+
     if (!name || !email || !phone || !email.includes("@")) {
       return NextResponse.json(
         { error: "Valid name, email and phone are required" },
@@ -50,16 +63,25 @@ export async function POST(request) {
       );
     }
 
-    // Public visitors can only create WEBSITE leads
     const data = isAdmin
       ? {
           ...body,
           name,
           email,
           phone,
-          source: VALID_SOURCES.includes(body.source) ? body.source : "MANUAL",
+          budgetRange,
+          source: VALID_SOURCES.includes(body.source)
+            ? body.source
+            : "MANUAL",
         }
-      : { name, email, phone, message: str(body.message, 2000), source: "WEBSITE" };
+          : {
+        name,
+        email,
+        phone,
+        budgetRange,
+        message: str(body.message, 2000),
+        source: "WEBSITE",
+      };
 
     const lead = await createLead(data);
 

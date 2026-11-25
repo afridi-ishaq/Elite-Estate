@@ -18,6 +18,13 @@ export async function getLeadById(id) {
 }
 
 export async function createLead(data) {
+  const numericBudget =
+    data.budget === null ||
+    data.budget === undefined ||
+    data.budget === ""
+      ? null
+      : Number(data.budget);
+
   return await prisma.lead.create({
     data: {
       name: data.name,
@@ -25,10 +32,17 @@ export async function createLead(data) {
       phone: data.phone,
       message: data.message || null,
       city: data.city || null,
-      budget: data.budget ? Number(data.budget) : null,
+
+      budget: Number.isFinite(numericBudget)
+        ? numericBudget
+        : null,
+
+      budgetRange: data.budgetRange || null,
+
       propertyType: data.propertyType || null,
       source: data.source || "WEBSITE",
       facebookLeadId: data.facebookLeadId || null,
+
       activities: {
         create: {
           type: "CREATED",

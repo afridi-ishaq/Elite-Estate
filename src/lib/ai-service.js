@@ -21,12 +21,20 @@ async function getGeminiKey() {
   return process.env.GEMINI_API_KEY;
 }
 
-// Local scoring: works without any external AI API.
 function scoreLeadLocally(lead) {
   const name = String(lead.name || "").trim();
   const phone = String(lead.phone || "").trim();
   const message = String(lead.message || "").toLowerCase();
   const source = String(lead.source || "").toUpperCase();
+
+  const budgetRange = String(lead.budgetRange || "").trim();
+  const hasBudgetRange = Boolean(budgetRange);
+
+  const hasNumericBudget =
+    Number.isFinite(Number(lead.budget)) &&
+    Number(lead.budget) > 0;
+
+  const hasBudget = hasBudgetRange || hasNumericBudget;
 
   const combined = `${name} ${message}`.toLowerCase();
 
@@ -53,27 +61,26 @@ function scoreLeadLocally(lead) {
 
   let score = name && phone ? 50 : 30;
 
-  if (lead.budget !== null && lead.budget !== undefined && Number(lead.budget) > 0) {
-    score += 15;
-  }
+  // Budget: numeric value or selected budget range.
+  if (hasBudget) score += 15;
 
+  // Location.
   if (lead.city) score += 10;
 
+  // Property requirements.
   if (lead.propertyType) score += 10;
 
+  // Genuine property interest.
   const intentPatterns =
     /\b(buy|buying|purchase|invest|investment|visit|details|interested|property|apartment|villa|house|plot|commercial)\b/;
 
-  if (intentPatterns.test(message)) {
-    score += 10;
-  }
+  if (intentPatterns.test(message)) score += 10;
 
+  // Urgency.
   const urgencyPatterns =
     /\b(urgent|urgently|immediately|soon|this month|ready|cash|asap)\b/;
 
-  if (urgencyPatterns.test(message)) {
-    score += 10;
-  }
+  if (urgencyPatterns.test(message)) score += 10;
 
   const goodSources = [
     "REFERRAL",
@@ -82,9 +89,7 @@ function scoreLeadLocally(lead) {
     "GOOGLE_ADS",
   ];
 
-  if (goodSources.includes(source)) {
-    score += 5;
-  }
+  if (goodSources.includes(source)) score += 5;
 
   score = Math.min(100, Math.max(0, score));
 
@@ -94,12 +99,14 @@ function scoreLeadLocally(lead) {
     summary: `Customer ${name || "is interested"} contacted Elite Estates${
       lead.propertyType ? ` about ${lead.propertyType}` : ""
     }${lead.city ? ` in ${lead.city}` : ""}. ${
-      lead.budget
-        ? `Their stated budget is ${lead.budget} PKR.`
-        : "No budget has been provided yet."
+      hasBudgetRange
+        ? `Their stated budget range is ${budgetRange}.`
+        : hasNumericBudget
+          ? `Their stated budget is ${Number(lead.budget).toLocaleString("en-PK")} PKR.`
+          : "No budget has been provided yet."
     }`,
     recommendation: phone
-      ? "Contact the customer, confirm their budget and property requirements, and arrange a suitable property consultation."
+      ? "Contact the customer, confirm their property requirements, and arrange a suitable property consultation."
       : "Obtain a valid phone number before assigning the inquiry to a sales agent.",
   };
 }
@@ -145,7 +152,6 @@ async function generateWithFallback(apiKey, body) {
   ].filter((model, index, array) => model && array.indexOf(model) === index);
 
   for (const model of models) {
-    // At most two attempts for temporary server/network errors.
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
         console.log(`[AI] Trying model: ${model}`);
@@ -163,14 +169,11 @@ async function generateWithFallback(apiKey, body) {
           message: error.message,
         });
 
-        // Quota exhausted: do not waste time retrying this model.
         if (error.status === 429) {
           console.warn(`[AI] Quota exhausted for ${model}. Trying fallback.`);
           break;
         }
 
-        // Authentication, permission, and request errors won't improve
-        // with a retry. Move to the next model.
         if (
           error.status &&
           ![500, 503, 504].includes(error.status)
@@ -198,17 +201,18 @@ export async function scoreLead(lead) {
 
     const prompt = `You are a lead qualification assistant for a luxury real-estate agency in Pakistan (Elite Estates).
 
-Score this lead from 0 to 100.
+Score this lead from 0 to 100 using these rules:
 
-Scoring rules:
-- Start at 50 for a genuine inquiry with a real name and phone number.
-- Add 15 if a budget is given.
-- Add 10 if a city or area is given.
-- Add 10 if a property type is given.
+- Start at 50 for a genuine inquiry with a real name and valid phone number.
+- Add 15 if a numeric budget OR budget range is provided.
+- Add 10 if a city or area is provided.
+- Add 10 if a property type is provided.
 - Add 10 if the message shows buying, investment, visiting, or property interest.
 - Add 10 if there is urgency.
 - Add 5 if source is Referral, WhatsApp, Facebook Ads, or Google Ads.
 - Do not subtract points for missing information.
+- Do not award the budget points twice if both budget fields are present.
+- A high budget indicates potential value, but does not automatically prove urgency or buying readiness.
 - Only score below 30 for obvious spam or fake inquiries.
 
 Budget is in PKR. 1 Crore = 10,000,000 PKR.
@@ -218,7 +222,8 @@ Name: ${lead.name}
 Email: ${lead.email}
 Phone: ${lead.phone}
 City: ${lead.city || "not given"}
-Budget (PKR): ${lead.budget ?? "not given"}
+Numeric budget (PKR): ${lead.budget ?? "not given"}
+Budget range: ${lead.budgetRange || "not given"}
 Property type: ${lead.propertyType || "not given"}
 Source: ${lead.source}
 Message: ${lead.message || "none"}
